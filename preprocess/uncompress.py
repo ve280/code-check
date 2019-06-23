@@ -2,6 +2,7 @@
 
 import tarfile
 import zipfile
+import rarfile
 import os
 import tempfile
 import sys
@@ -29,20 +30,45 @@ def untar(file, dest):
         return 1
 
 
+def unrar(file, dest):
+    print('unrar %s in %s' % (file, dest))
+    if rarfile.is_rarfile(file):
+        rf = rarfile.RarFile(file, 'r')
+        rf.extractall(dest)
+        return 0
+    else:
+        print('failed', file=sys.stderr)
+        return 1
+
+
 def main(file):
     filename, _ = os.path.splitext(file)
     with tempfile.TemporaryDirectory() as tempdir:
         if unzip(file, tempdir) == 0:
             error = 0
+            success = 0
             for file in os.listdir(tempdir):
                 record_file = os.path.join(tempdir, file)
                 record_filename, record_ext = os.path.splitext(file)
                 record_dest = os.path.join(filename, record_filename)
                 if record_ext == '.zip':
-                    error += unzip(record_file, record_dest)
+                    if unzip(record_file, record_dest):
+                        error += 1
+                    else:
+                        success += 1
                 elif record_ext == '.tar':
-                    error += untar(record_file, record_dest)
-            print('finished, with %d error(s)' % error)
+                    if untar(record_file, record_dest):
+                        error += 1
+                    else:
+                        success += 1
+                elif record_ext == '.rar':
+                    if unrar(record_file, record_dest):
+                        error += 1
+                    else:
+                        success += 1
+                else:
+                    print('extension not supported', file=sys.stderr)
+            print('finished, with %d success(es) and %d error(s)' % (success, error))
 
 
 if len(sys.argv) > 1:

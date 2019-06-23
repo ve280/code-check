@@ -5,7 +5,7 @@ import re
 import shlex
 import os
 import argparse
-
+from pprint import pprint
 import chardet
 
 
@@ -131,7 +131,6 @@ def main(project_dir, silent=False):
     main_cpp_found = False
     functions = {}
     clang_check_score = 0
-    clang_tidy_score = 0
 
     p = subprocess.Popen("clang-check-8 -ast-dump %s --" % main_cpp_path, shell=True, stdout=subprocess.PIPE)
 
@@ -200,11 +199,46 @@ def main(project_dir, silent=False):
         clang_check_score += min(4, one_line_comment_count)
 
     if not silent:
-        print('\nclang_check_score: %d' % clang_check_score)
+        print('\nclang-check score: %d' % clang_check_score)
+
+    clang_tidy_warnings = {}
+    clang_tidy_warnings_count = 0
+    clang_tidy_score = 0
+    p = subprocess.Popen("clang-tidy-8 %s -checks=-*,misc-*,performance-*,clang-analyzer-*,readability-*,"
+                         "-readability-braces-around-statements,-readability-magic-numbers,"
+                         "-readability-isolate-declaration --"
+                         % main_cpp_path, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    if not silent:
+        print('\nparsing clang-tidy results:')
+    while p.poll() is None:
+        line = p.stdout.readline().decode('utf-8')
+        line = re.sub(r'\x1b(\[.*?[@-~]|\].*?(\x07|\x1b\\))', '', line).strip()
+        res = re.findall(r'warning:.*?\[(.*?)\]', line)
+        if res:
+            if res[0] in clang_tidy_warnings:
+                clang_tidy_warnings[res[0]] += 1
+            else:
+                clang_tidy_warnings[res[0]] = 1
+            clang_tidy_warnings_count += 1
+    if clang_tidy_warnings_count <= 5:
+        clang_tidy_score += 2
+    elif clang_tidy_warnings_count <= 11:
+        clang_tidy_score += 1
+    if len(clang_tidy_warnings) <= 2:
+        clang_tidy_score += 2
+    elif len(clang_tidy_warnings) <= 5:
+        clang_tidy_score += 1
+    if not silent:
+        pprint(clang_tidy_warnings)
+        print('\nclang-tidy score: %d' % clang_tidy_score)
+
+    if silent:
+        print('%d,%d' % (clang_check_score, clang_tidy_score))
 
 
 parser = argparse.ArgumentParser(description='Project 1 Code Checker.')
-parser.add_argument('--silent', default=False, type=bool)
+parser.add_argument('--silent', action='store_true')
 parser.add_argument('project_dir', type=str, nargs=1)
 args = parser.parse_args()
 main(args.project_dir[0], silent=args.silent)

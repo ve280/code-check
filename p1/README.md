@@ -1,6 +1,6 @@
-## Code Check for Project 1
+# Code Check for Project 1
 
-### Usage
+## Usage
 
 ```bash
 codestyle.py [-v/--verbose] <project_dir>
@@ -8,9 +8,9 @@ codestyle.py [-v/--verbose] <project_dir>
 
 Use the verbose option to print detailed information about the checks
 
-### Checks and Grading Policy
+## Checks and Grading Policy
 
-#### clang-check [6 marks]
+### clang-check [6 marks]
 
 `clang-check` is used to generate the ast tree from the source file `p1.cpp` and 
 check general style 1) and 4).
@@ -33,7 +33,7 @@ For example, if you only have a `main` function, with 5 lines of comments in it,
 you will get 2 marks for this part.
 
 
-#### clang-tidy [4 marks]
+### clang-tidy [4 marks]
 
 `clang-tidy` is used to check general style 3). A report consists of intolerable warnings 
 is generated and we will count the numbers and types of the warnings and give a deduction.
@@ -43,7 +43,7 @@ The detailed grading policy is:
 
 
 
-### Contributors
+## Contributors
 
 Designed by Yihao Liu ([tc-imba](https://github.com/tc-imba))
 

@@ -21,6 +21,8 @@ and their range.
 Second, based on the ranges, we try to find whether there are informative comments 
 at the head of each function (or in the body of the function).
 
+A valid comment line must contain more than five non-space characters.
+
 The detailed grading policy is:
 + there are 2-3 subroutines [1 mark]
 + there are 4+ subroutines [1 mark]

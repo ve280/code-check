@@ -1,1 +1,5 @@
 *.cpp
+*_records
+*.tar.*
+*.zip
+.idea

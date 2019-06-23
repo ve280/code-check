@@ -13,5 +13,11 @@ sudo apt install python3
 sudo apt install clang-8 clang-tools-8 clang-format-8 clang-tidy-8
 ```
 
+## General Styles
+
+1) appropriate use of indenting and white space
+2) program appropriately split into subroutines
+3) variable and function names that reflect their use
+4) informative comments at the head of each function.
 
 

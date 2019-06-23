@@ -3,10 +3,10 @@
 ## Usage
 
 ```bash
-codestyle.py [-v/--verbose] <project_dir>
+codestyle.py [-h] [-v VERBOSE] project_dir
 ```
 
-Use the verbose option to print detailed information about the checks
+Use the silent option to batch all of the submissions.
 
 ## Checks and Grading Policy
 

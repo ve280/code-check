@@ -9,8 +9,9 @@ We use `Python>=3.6` and `Clang>=8` to develop the tests.
 On Ubuntu, install them with
 
 ```bash
-sudo apt install python3
+sudo apt install python3 python3-pip
 sudo apt install clang-8 clang-tools-8 clang-format-8 clang-tidy-8
+pip3 install -r requirements.txt
 ```
 
 ## General Styles

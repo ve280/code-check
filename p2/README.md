@@ -41,7 +41,7 @@ For the number of warnings generated,
 `networkx` is used to check if each function implementation contains recursion. 
 
 Firstly, we extract the function declarations and all function calls inside function definitions 
-from the ast tree of `p1.cpp`. Each pair of defined function and helper function called inside 
+from the ast tree of `p2.cpp`. Each pair of defined function and helper function called inside 
 definition is added as an edge to `networkx`'s graph.
 
 Secondly, we use `networkx.simple_cycles` to find all recursive functions. This handles both 

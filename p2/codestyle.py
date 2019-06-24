@@ -181,7 +181,7 @@ def main(project_dir, silent=False):
         print('%d,%d' % (clang_check_score, clang_tidy_score))
 
 
-parser = argparse.ArgumentParser(description='Project 1 Code Checker.')
+parser = argparse.ArgumentParser(description='Project 2 Code Checker.')
 parser.add_argument('--silent', action='store_true')
 parser.add_argument('project_dir', type=str, nargs=1)
 args = parser.parse_args()

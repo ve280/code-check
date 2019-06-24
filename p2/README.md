@@ -1,4 +1,4 @@
-# Code Check for Project 1
+# Code Check for Project 2
 
 ## Usage
 
@@ -60,7 +60,7 @@ implemented as the `source`, and any recursive function as the `target`.
 
 If any `p2.h` function definition is found to contain no recursion, all points of JOJ test cases 
 related to this function will be deducted. Additionally, we deduct one point from the `clang-check` 
-section, since its code style doesn't meet the requirements either.
+section, since the function's code style doesn't meet the requirements either.
 
 
 ## Contributors

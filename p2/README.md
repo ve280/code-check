@@ -41,7 +41,7 @@ For the number of warnings generated,
 `networkx` is used to check if each function implementation contains recursion. 
 
 Firstly, we extract the function declarations and all function calls inside function definitions 
-from the ast tree of `p1.cpp`. Each pair of defined function and helper function called inside 
+from the ast tree of `p2.cpp`. Each pair of defined function and helper function called inside 
 definition is added as an edge to `networkx`'s graph.
 
 Secondly, we use `networkx.simple_cycles` to find all recursive functions. This handles both 
@@ -55,8 +55,8 @@ void func2() { func1(); }
 ```
 
 Thirdly, we check whether each function listed in `p2.h` calls any recursive function directly or 
-indirectly. This is done by using `networkx.all_simple_paths`, with the function to be 
-implemented as the `source`, and any recursive function as the `target`. 
+indirectly. This is done by using `networkx.all_simple_paths`, with the implemented function as 
+the `source`, and any recursive function as the `target`. 
 
 If any `p2.h` function definition is found to contain no recursion, all points of JOJ test cases 
 related to this function will be deducted. Additionally, we deduct one point from the `clang-check` 

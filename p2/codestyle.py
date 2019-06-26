@@ -36,7 +36,6 @@ class FunctionDeclaration:
         splitter.whitespace += ','
         splitter.whitespace_split = True
         args = list(splitter)
-        print(args)
         if len(args) < 2:
             self.error = True
             return
@@ -154,7 +153,7 @@ def main(project_dir, silent=False):
     clang_tidy_score = 0
     p = subprocess.Popen("clang-tidy %s -checks=-*,misc-*,performance-*,clang-analyzer-*,readability-*,"
                          "-readability-braces-around-statements,-readability-magic-numbers,"
-                         "-readability-isolate-declaration --"
+                         "-readability-isolate-declaration,-readability-else-after-return --"
                          % main_cpp_path, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     if not silent:
@@ -169,13 +168,13 @@ def main(project_dir, silent=False):
             else:
                 clang_tidy_warnings[res[0]] = 1
             clang_tidy_warnings_count += 1
-    if clang_tidy_warnings_count <= 5:
+    if clang_tidy_warnings_count <= 10:
         clang_tidy_score += 2
-    elif clang_tidy_warnings_count <= 11:
+    elif clang_tidy_warnings_count <= 25:
         clang_tidy_score += 1
-    if len(clang_tidy_warnings) <= 2:
+    if len(clang_tidy_warnings) <= 3:
         clang_tidy_score += 2
-    elif len(clang_tidy_warnings) <= 5:
+    elif len(clang_tidy_warnings) <= 6:
         clang_tidy_score += 1
     if not silent:
         pprint(clang_tidy_warnings)

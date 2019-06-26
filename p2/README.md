@@ -27,14 +27,14 @@ is generated and we will count the numbers and types of the warnings and give a 
 The detailed grading policy is:
 
 For the types of warnings generated,
-+ 0-2 types of warnings generated [2 marks]
-+ 3-5 types of warnings generated [1 mark]
-+ 6+ types of warnings generated [0 mark]
++ 0-3 types of warnings generated [2 marks]
++ 4-6 types of warnings generated [1 mark]
++ 7+ types of warnings generated [0 mark]
 
 For the number of warnings generated,
-+ 0-5 warnings generated [2 marks]
-+ 6-11 warnings generated [1 mark]
-+ 12+ warnings generated [0 mark]
++ 0-10 warnings generated [2 marks]
++ 11-25 warnings generated [1 mark]
++ 26+ warnings generated [0 mark]
 
 ### networkx
 

@@ -1,4 +1,5 @@
 *.cpp
+!p2/driver/*.cpp
 *_records
 *.tar.*
 *.zip

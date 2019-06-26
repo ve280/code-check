@@ -4,7 +4,9 @@ for f in `ls p2_records`; do
     echo p2_records/$f
     #echo p2_records/$f > p2_results/$f.txt
 
-    score=`python3 codestyle.py p2_records/$f --silent`
+    cp p2_records/$f/p2.cpp driver
+    score=`python3 codestyle.py driver --silent`
+    rm driver/p2.cpp
     echo $f,$score | tee -a p2_code_check.csv
 
     #python3 codestyle.py p2_records/$f >> p2_results/$f.txt

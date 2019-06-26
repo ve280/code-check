@@ -28,11 +28,15 @@ class FunctionDeclaration:
         else:
             self.end = int(function_range[1])
 
+        # remove " static" at line end
+        line = line.rstrip(' static')
+
         # use a trick to split the line
         splitter = shlex.shlex(line, posix=True)
         splitter.whitespace += ','
         splitter.whitespace_split = True
         args = list(splitter)
+        print(args)
         if len(args) < 2:
             self.error = True
             return

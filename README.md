@@ -7,13 +7,13 @@ We are planing to embed these checks into JOJ (in the future).
 
 ## Prerequisite
 
-We use `Python>=3.6` and `Clang>=8` to develop the tests.
+We use `Python>=3.6` and `Clang>=6` to develop the tests.
 
 On Ubuntu, install them with
 
 ```bash
 sudo apt install python3 python3-pip
-sudo apt install clang-8 clang-tools-8 clang-format-8 clang-tidy-8
+sudo apt install clang clang-tools clang-format clang-tidy
 pip3 install -r requirements.txt
 ```
 

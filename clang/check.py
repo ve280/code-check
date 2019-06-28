@@ -1,12 +1,8 @@
-#!/usr/bin/python3
-
-import subprocess
 import re
 import shlex
-import os
-import argparse
-from pprint import pprint
-import chardet
+import subprocess
+
+from clang.utils import read_file
 
 
 class FunctionDeclaration:
@@ -16,7 +12,7 @@ class FunctionDeclaration:
         self.error = False
 
         # use regexp to parse the start and end line number
-        function_range = re.findall(r":(\d+):", line)
+        function_range = re.findall(r"line:(\d+)", line)
         if len(function_range) < 1:
             self.error = True
             return
@@ -27,9 +23,6 @@ class FunctionDeclaration:
             self.end = self.start
         else:
             self.end = int(function_range[1])
-
-        # remove " static" at line end
-        line = line.rstrip(' static')
 
         # use a trick to split the line
         splitter = shlex.shlex(line, posix=True)
@@ -77,31 +70,53 @@ class Function:
     def add_declaration(self, func_decl):
         self.func_declarations.append(func_decl)
 
-    def count_lines(self):
-        return sum([func_decl.end - func_decl.start + 1 for func_decl in self.func_declarations])
+    def analyze_comments(self):
+        self.prototype_comments = 0
+        self.body_comments = 0
+
+        def add_comment(line):
+            if not block_comment:
+                line = ''.join(re.findall(r'//(.+)', line, re.DOTALL))
+            line = re.sub(r'[/*\s]', '', line)
+            if len(line) > 5:
+                if state < 2:
+                    self.prototype_comments += 1
+                else:
+                    self.body_comments += 1
+
+        for func_decl in self.func_declarations:
+            state = 0
+            block_comment = False
+            for i, line in func_decl.body:
+                line = line.strip()
+                if len(line) == 0:
+                    if i > func_decl.start:
+                        state += 1
+                    continue
+                left_block = len(re.findall(r'/\*', line))
+                right_block = len(re.findall(r'\*/', line))
+                if left_block > right_block:
+                    block_comment = True
+                    add_comment(line)
+                elif left_block < right_block:
+                    add_comment(line)
+                    block_comment = False
+                elif block_comment:
+                    add_comment(line)
+                elif line.startswith('//'):
+                    add_comment(line)
+                elif i > func_decl.start:
+                    state += 1
 
     def __str__(self):
         return self.prototype
 
 
-def read_file(file_path, silent=False):
-    with open(file_path, 'rb') as file:
-        bytes_str = file.read()
-        charset = chardet.detect(bytes_str)['encoding']
-        if not silent:
-            print('encoding: %s' % charset)
-        return bytes_str.decode(charset).split('\n')
-
-
-def main(project_dir, silent=False):
-    main_cpp_name = 'p2.cpp'
-    main_cpp_path = os.path.join(project_dir, main_cpp_name)
+def parse_functions(main_cpp_name, main_cpp_path, silent=False):
+    p = subprocess.Popen("clang-check -ast-dump %s --extra-arg='-fno-color-diagnostics' --"
+                         % main_cpp_path, shell=True, stdout=subprocess.PIPE)
     main_cpp_found = False
     functions = {}
-    clang_check_score = 6
-
-    p = subprocess.Popen("clang-check -ast-dump %s --" % main_cpp_path,
-                         shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     if not silent:
         print('parsing function declarations:')
@@ -110,7 +125,7 @@ def main(project_dir, silent=False):
         if main_cpp_name in line:
             main_cpp_found = True
         if main_cpp_found and 'FunctionDecl' in line and 'line' in line:
-            line = re.sub(r'\x1b(\[.*?[@-~]|\].*?(\x07|\x1b\\))', '', line).strip()
+            line = line.strip()
             func_decl = FunctionDeclaration(line)
             if not func_decl.error:
                 func_prototype = str(func_decl)
@@ -125,7 +140,9 @@ def main(project_dir, silent=False):
 
     if not silent:
         print('\nparsing cpp file:')
+
     main_cpp_contents = read_file(main_cpp_path, silent=silent)
+
     for i, func_decl in enumerate(FunctionDeclaration.function_declares):
         if func_decl.end <= len(main_cpp_contents):
             if i > 1:
@@ -135,58 +152,16 @@ def main(project_dir, silent=False):
             end = func_decl.end
             func_decl.set_body([(x, main_cpp_contents[x]) for x in range(start, end)])
 
-    if not silent:
-        print('\ncounting function lines:')
+    return functions
 
+
+def parse_comments(functions, silent=False):
+    if not silent:
+        print('\nparsing function comments:')
     for func_prototype, func in functions.items():
+        func.analyze_comments()
         if not silent:
             print(func)
-            line_count = func.count_lines()
-            print('total lines: %d' % line_count)
-            if line_count > 50 and clang_check_score > 0:
-                clang_check_score -= 1
+            print('declarations: %d, prototype comments: %d, body comments: %d'
+                  % (len(func.func_declarations), func.prototype_comments, func.body_comments))
 
-    if not silent:
-        print('\nclang-check score: %d' % clang_check_score)
-
-    clang_tidy_warnings = {}
-    clang_tidy_warnings_count = 0
-    clang_tidy_score = 0
-    p = subprocess.Popen("clang-tidy %s -checks=-*,misc-*,performance-*,clang-analyzer-*,readability-*,"
-                         "-readability-braces-around-statements,-readability-magic-numbers,"
-                         "-readability-isolate-declaration,-readability-else-after-return --"
-                         % main_cpp_path, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-    if not silent:
-        print('\nparsing clang-tidy results:')
-    while p.poll() is None:
-        line = p.stdout.readline().decode('utf-8')
-        line = re.sub(r'\x1b(\[.*?[@-~]|\].*?(\x07|\x1b\\))', '', line).strip()
-        res = re.findall(r'warning:.*?\[(.*?)\]', line)
-        if res:
-            if res[0] in clang_tidy_warnings:
-                clang_tidy_warnings[res[0]] += 1
-            else:
-                clang_tidy_warnings[res[0]] = 1
-            clang_tidy_warnings_count += 1
-    if clang_tidy_warnings_count <= 10:
-        clang_tidy_score += 2
-    elif clang_tidy_warnings_count <= 25:
-        clang_tidy_score += 1
-    if len(clang_tidy_warnings) <= 3:
-        clang_tidy_score += 2
-    elif len(clang_tidy_warnings) <= 6:
-        clang_tidy_score += 1
-    if not silent:
-        pprint(clang_tidy_warnings)
-        print('\nclang-tidy score: %d' % clang_tidy_score)
-
-    if silent:
-        print('%d,%d' % (clang_check_score, clang_tidy_score))
-
-
-parser = argparse.ArgumentParser(description='Project 2 Code Style Checker.')
-parser.add_argument('--silent', action='store_true')
-parser.add_argument('project_dir', type=str, nargs=1)
-args = parser.parse_args()
-main(args.project_dir[0], silent=args.silent)

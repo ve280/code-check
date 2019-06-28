@@ -13,6 +13,7 @@ def unzip(file, dest):
     if zipfile.is_zipfile(file):
         zf = zipfile.ZipFile(file, 'r')
         zf.extractall(dest)
+        chmod(dest, 0o644)
         return 0
     else:
         print('failed', file=sys.stderr)
@@ -24,6 +25,7 @@ def untar(file, dest):
     if tarfile.is_tarfile(file):
         tf = tarfile.open(file, 'r')
         tf.extractall(dest)
+        chmod(dest, 0o644)
         return 0
     else:
         print('failed', file=sys.stderr)
@@ -35,10 +37,19 @@ def unrar(file, dest):
     if rarfile.is_rarfile(file):
         rf = rarfile.RarFile(file, 'r')
         rf.extractall(dest)
+        chmod(dest, 0o644)
         return 0
     else:
         print('failed', file=sys.stderr)
         return 1
+
+
+def chmod(directory, mode):
+    for root, dirs, files in os.walk(directory, topdown=False):
+        for name in files:
+            os.chmod(os.path.join(root, name), mode=mode)
+        for name in dirs:
+            os.chmod(os.path.join(root, name), mode=mode)
 
 
 def main(file):

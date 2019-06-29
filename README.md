@@ -37,7 +37,11 @@ Second, uncompress the file with `preprocess/uncompress.py`.
 python3 preprocess/uncompress.py p1_records.zip
 ```
 
-At last, use the bash script `checkall.sh` to generate the result in a csv file (`p1_code_check.csv`).
+At last, use the `checkall.py` to generate the result in a csv file (`p1_code_check.csv`):
+
+```bash
+python3 checkall.py p1
+```
 
 ## General Styles
 

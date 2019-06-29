@@ -1,6 +1,7 @@
 import argparse
 import csv
 import os
+import shutil
 import subprocess
 import multiprocessing
 
@@ -16,8 +17,15 @@ def check_one(project, checkers, uid, project_dir):
     return result
 
 
+def inject_driver(project_dir, driver_dir):
+    if os.path.isdir(project_dir) and os.path.isdir(driver_dir):
+        for file in os.listdir(driver_dir):
+            shutil.copy2(os.path.join(driver_dir, file), os.path.join(project_dir, file))
+
+
 def main(project, jobs):
     records_dir = project + '_records'
+    driver_dir = os.path.join(project, 'driver')
     # results_dir = project + '_results'
     result_file = project + '_code_check.csv'
     results = []
@@ -25,7 +33,8 @@ def main(project, jobs):
     for uid in os.listdir(records_dir):
         project_dir = os.path.join(records_dir, uid)
         if os.path.isdir(project_dir):
-            results.append(pool.apply_async(check_one, (project, ['codestyle.py'], uid, project_dir,)))
+            inject_driver(project_dir, driver_dir)
+            results.append(pool.apply_async(check_one, (project, ['codestyle.py', 'recursion.py'], uid, project_dir,)))
     pool.close()
     pool.join()
 

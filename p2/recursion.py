@@ -29,7 +29,10 @@ def main(project_dir, silent=False):
     edges = []
     for block in blocks:
         lines = block.split('\n')
-        func_decl = re.findall(r"(\w+) '(?:.+?)'", lines[0])[0]
+        func_decl = re.findall(r"(\w+) '(?:.+?)'", lines[0])
+        if not func_decl:
+            continue
+        func_decl = func_decl[0]
 
         for line in lines[1:]:
             func_call = re.findall(r"DeclRefExpr(?:.+?)Function 0x\w+ '(\w+)' '(?:.+?)'", line)

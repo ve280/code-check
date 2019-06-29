@@ -34,7 +34,7 @@ def main(project, jobs):
         project_dir = os.path.join(records_dir, uid)
         if os.path.isdir(project_dir):
             inject_driver(project_dir, driver_dir)
-            results.append(pool.apply_async(check_one, (project, ['codestyle.py', 'recursion.py'], uid, project_dir,)))
+            results.append(pool.apply_async(check_one, (project, ['codestyle.py'], uid, project_dir,)))
     pool.close()
     pool.join()
 

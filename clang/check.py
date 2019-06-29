@@ -103,7 +103,8 @@ class Function:
                     block_comment = False
                 elif block_comment:
                     add_comment(line)
-                elif line.startswith('//'):
+                elif '//' in line:
+                    line = line[line.find('//'):]
                     add_comment(line)
                 elif i > func_decl.start:
                     state += 1

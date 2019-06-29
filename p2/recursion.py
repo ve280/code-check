@@ -18,7 +18,7 @@ def main(project_dir, silent=False):
     main_cpp_path = os.path.join(project_dir, main_cpp_name)
 
     p = subprocess.Popen("clang-check -ast-dump %s --extra-arg='-fno-color-diagnostics' --" % main_cpp_path, shell=True,
-                         stdout=subprocess.PIPE)
+                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     if not silent:
         print('parsing function declarations and function calls:')
@@ -59,7 +59,7 @@ def main(project_dir, silent=False):
                 non_rec_funcs.append(func)
 
     if silent:
-        print(','.join(non_rec_funcs))
+        print(';'.join(non_rec_funcs))
     else:
         print('Non-recursive functions: %s' % non_rec_funcs)
 

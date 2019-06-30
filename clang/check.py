@@ -87,6 +87,7 @@ class Function:
         for func_decl in self.func_declarations:
             state = 0
             block_comment = False
+            print(func_decl.body)
             for i, line in func_decl.body:
                 line = line.strip()
                 if len(line) == 0:
@@ -147,9 +148,9 @@ def parse_functions(main_cpp_name, main_cpp_path, silent=False):
     for i, func_decl in enumerate(FunctionDeclaration.function_declares):
         if func_decl.end <= len(main_cpp_contents):
             if i > 1:
-                start = max(FunctionDeclaration.get_by_id(i - 1).end, func_decl.start - 5)
+                start = max(FunctionDeclaration.get_by_id(i - 1).end, func_decl.start - 20)
             else:
-                start = max(0, func_decl.start - 5)
+                start = max(0, func_decl.start - 20)
             end = func_decl.end
             func_decl.set_body([(x, main_cpp_contents[x]) for x in range(start, end)])
 

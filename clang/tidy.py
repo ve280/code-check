@@ -3,9 +3,10 @@ import subprocess
 
 
 def parse_warnings(main_cpp_path, silent=False):
-    p = subprocess.Popen("clang-tidy %s -checks=-*,misc-*,performance-*,clang-analyzer-*,readability-*,"
-                         "-readability-braces-around-statements,-readability-magic-numbers,"
-                         "-readability-isolate-declaration --extra-arg='-fno-color-diagnostics' --"
+    p = subprocess.Popen("clang-tidy %s -checks=-*,misc-*,performance-*,clang-analyzer-*,"
+                         "readability-function-size,readability-identifier-naming,readability-named-parameter,"
+                         "readability-redundant-*,readability-simplify-boolean-expr,readability-mis*,"
+                         "--extra-arg='-fno-color-diagnostics' --"
                          % main_cpp_path, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     warnings = {}

@@ -152,9 +152,10 @@ def main(project_dir, silent=False):
     clang_tidy_warnings = {}
     clang_tidy_warnings_count = 0
     clang_tidy_score = 0
-    p = subprocess.Popen("clang-tidy %s -checks=-*,misc-*,performance-*,clang-analyzer-*,readability-*,"
-                         "-readability-braces-around-statements,-readability-magic-numbers,"
-                         "-readability-isolate-declaration,-readability-else-after-return --"
+    p = subprocess.Popen("clang-tidy %s -checks=-*,misc-*,performance-*,clang-analyzer-*,"
+                         "readability-function-size,readability-identifier-naming,readability-named-parameter,"
+                         "readability-redundant-*,readability-simplify-boolean-expr,readability-mis*,"
+                         "--extra-arg='-fno-color-diagnostics' --"
                          % main_cpp_path, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     if not silent:

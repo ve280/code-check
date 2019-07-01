@@ -45,9 +45,9 @@ python3 checkall.py p1
 
 ## General Styles
 
-1) appropriate use of indenting and white space
-2) program appropriately split into subroutines
-3) variable and function names that reflect their use
-4) informative comments at the head of each function.
+1) Appropriate use of indenting and white space
+2) Program appropriately split into subroutines
+3) Variable and function names that reflect their use
+4) Informative comments at the head of each function.
 
 

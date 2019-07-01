@@ -43,6 +43,14 @@ At last, use the `checkall.py` to generate the result in a csv file (`p1_code_ch
 python3 checkall.py p1
 ```
 
+## Clang Tidy Arguments
+
+You can directly test `clang-tidy` warnings by
+```bash
+clang-tidy main.cpp -checks=-*,misc-*,performance-*,clang-analyzer-*,readability-function-size,readability-identifier-naming,readability-named-parameter,readability-redundant-*,readability-simplify-boolean-expr,readability-mis* --
+```
+
+
 ## General Styles
 
 1) Appropriate use of indenting and white space

@@ -24,7 +24,7 @@ pip3 install -r requirements.txt
 Directly run the code check by (p1 as example):
 
 ```bash
-python3 p1/codestyle.py <your_project_dir>
+PYTHONPATH=. python3 p1/codestyle.py <your_project_dir>
 ```
 
 ### For TAs

@@ -19,7 +19,7 @@ class FunctionDeclaration:
             self.error = True
             return
 
-        function_range = re.findall(r"[^c][^o][^l0-9]:(\d+)", function_range[0])
+        function_range = re.findall(r"[^l0-9]:(\d+)", function_range[0])
         if len(function_range) < 1:
             self.error = True
             return
@@ -136,7 +136,7 @@ def parse_functions_new(project_dir, files, silent=False, functions=None):
     files_path = build_full_paths(project_dir, files)
     p = subprocess.Popen("clang-check -ast-dump %s --extra-arg='-fno-color-diagnostics' --"
                          % ' '.join(sources_path), shell=True, stdout=subprocess.PIPE)
-    print(sources_path)
+    # print(sources_path)
 
     current_file = None
 
@@ -190,10 +190,10 @@ def parse_functions_new(project_dir, files, silent=False, functions=None):
             if func_decl.end <= len(file_contents):
                 # print(j, func_decl)
                 if j > 0:
-                    start = max(func_decls[i - 1].end, func_decl.start - 20)
+                    start = max(func_decls[j - 1].end, func_decl.start - 20)
                 else:
                     start = max(0, func_decl.start - 20)
-                end = func_decl.end
+                end = min(func_decl.end, len(file_contents) - 1)
                 func_decl.set_body([(x, file_contents[x]) for x in range(start, end + 1)])
 
     return functions
@@ -253,6 +253,6 @@ def parse_comments(functions, silent=False):
                   % (len(func.func_declarations), func.len, func.prototype_comments, func.body_comments))
 
 
-functions = parse_functions_new('/home/liu/SJTU/code-check/solution',
-                                ['world_type.h', 'simulation.cpp', 'p3.cpp', 'simulation.h'])
-parse_comments(functions)
+# functions = parse_functions_new('/home/liu/SJTU/code-check/solution/formatted',
+#                                 ['world_type.h', 'simulation.cpp', 'p3.cpp', 'simulation.h'])
+# parse_comments(functions)

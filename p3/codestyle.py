@@ -6,53 +6,46 @@ from pprint import pprint
 
 import clang.check
 import clang.tidy
+import clang.format
 
 
 def main(project_dir, silent=False):
-    main_cpp_name = 'simulation.cpp'
-    main_cpp_path = os.path.join(project_dir, main_cpp_name)
+    files = ['world_type.h', 'simulation.cpp', 'p3.cpp', 'simulation.h']
+    format_dir = os.path.join(project_dir, 'formatted')
+
+    clang.format.generate_formatted_files(project_dir, format_dir, files, silent=silent)
+
     clang_check_score = 0
 
-    functions = clang.check.parse_functions(main_cpp_name, main_cpp_path, silent=silent)
+    functions = clang.check.parse_functions_new(format_dir, files, silent=silent)
     clang.check.parse_comments(functions, silent=silent)
 
     subroutine_count = 0
-    one_line_comment_count = 0
-    five_line_comment_count = 0
+    long_function_count = 0
 
     for func_prototype, func in functions.items():
-        comment_count = func.prototype_comments + func.body_comments
-
         if func.name != 'main':
             subroutine_count += 1
-        if comment_count >= 1:
-            one_line_comment_count += 1
-        if comment_count >= 5:
-            five_line_comment_count += 1
+        if func.len >= 100:
+            long_function_count += 1
 
-    if subroutine_count <= 1:
-        if five_line_comment_count > 0:
-            clang_check_score += 1
-        clang_check_score += min(2, one_line_comment_count)
-    else:
-        clang_check_score += 1
-        if subroutine_count >= 4:
-            clang_check_score += 1
-        clang_check_score += min(4, one_line_comment_count)
+    clang_check_score += min(3, subroutine_count // 5)
+    clang_check_score += max(0, 3 - long_function_count)
 
     if not silent:
-        print('\nclang-check score: %d' % clang_check_score)
+        print('\nsubroutines: %d, long functions: %d' % (subroutine_count, long_function_count))
+        print('clang-check score: %d' % clang_check_score)
 
-    clang_tidy_warnings, clang_tidy_warnings_count = clang.tidy.parse_warnings(main_cpp_path, silent=silent)
+    clang_tidy_warnings, clang_tidy_warnings_count = clang.tidy.parse_warnings_new(format_dir, files, silent=silent)
     clang_tidy_score = 0
 
-    if clang_tidy_warnings_count <= 5:
+    if clang_tidy_warnings_count <= 10:
         clang_tidy_score += 2
-    elif clang_tidy_warnings_count <= 11:
+    elif clang_tidy_warnings_count <= 25:
         clang_tidy_score += 1
-    if len(clang_tidy_warnings) <= 2:
+    if len(clang_tidy_warnings) <= 3:
         clang_tidy_score += 2
-    elif len(clang_tidy_warnings) <= 5:
+    elif len(clang_tidy_warnings) <= 6:
         clang_tidy_score += 1
     if not silent:
         pprint(clang_tidy_warnings)

@@ -4,28 +4,14 @@ import json
 
 from clang.utils import split_sources_headers, build_full_paths
 
-# ported from CLion, remove modernize-*, cert-*, hicpp-*
+# ported from CLion, remove modernize-*, cert-*, hicpp-*, cppcoreguidelines-*
 clang_tidy_checks = {'Checks': ','.join([
     "*",
     "-android-*",
     "-bugprone-bool-pointer-implicit-conversion",
     "-bugprone-exception-escape",
     "-cert-*",
-    "-cppcoreguidelines-avoid-goto",
-    "-cppcoreguidelines-avoid-magic-numbers",
-    "-cppcoreguidelines-no-malloc",
-    "-cppcoreguidelines-owning-memory",
-    "-cppcoreguidelines-pro-bounds-array-to-pointer-decay",
-    "-cppcoreguidelines-pro-bounds-constant-array-index",
-    "-cppcoreguidelines-pro-bounds-pointer-arithmetic",
-    "-cppcoreguidelines-pro-type-const-cast",
-    "-cppcoreguidelines-pro-type-cstyle-cast",
-    "-cppcoreguidelines-pro-type-reinterpret-cast",
-    "-cppcoreguidelines-pro-type-union-access",
-    "-cppcoreguidelines-pro-type-vararg",
-    "-cppcoreguidelines-pro-type-member-init",
-    "-cppcoreguidelines-special-member-functions",
-    "-cppcoreguidelines-avoid-c-arrays",
+    "-cppcoreguidelines-*",
     "-fuchsia-*",
     "-google-*",
     "google-default-arguments",
@@ -44,6 +30,7 @@ clang_tidy_checks = {'Checks': ','.join([
     "-readability-function-size",
     "-readability-redundant-member-init",
     "-readability-isolate-declaration",
+    "-readability-redundant-control-flow,"
     "-misc-bool-pointer-implicit-conversion",
     "-misc-definitions-in-headers",
     "-misc-unused-alias-decls",

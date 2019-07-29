@@ -47,7 +47,7 @@ python3 checkall.py p1
 
 You can directly test `clang-tidy` warnings by
 ```bash
-clang-tidy main.cpp -checks=-*,misc-*,performance-*,clang-analyzer-*,readability-function-size,readability-identifier-naming,readability-named-parameter,readability-redundant-*,readability-simplify-boolean-expr,readability-mis* --
+clang-tidy -config='{"Checks": "*,-android-*,-bugprone-bool-pointer-implicit-conversion,-bugprone-exception-escape,-cert-*,-cppcoreguidelines-*,-fuchsia-*,-google-*,google-default-arguments,google-explicit-constructor,google-runtime-operator,-hicpp-*,-llvm-*,-objc-*,-readability-else-after-return,-readability-implicit-bool-conversion,-readability-magic-numbers,-readability-named-parameter,-readability-simplify-boolean-expr,-readability-braces-around-statements,-readability-identifier-naming,-readability-function-size,-readability-redundant-member-init,-readability-isolate-declaration,-readability-redundant-control-flow,-misc-bool-pointer-implicit-conversion,-misc-definitions-in-headers,-misc-unused-alias-decls,-misc-unused-parameters,-misc-unused-using-decls,-modernize-*,-clang-diagnostic-*,-clang-analyzer-*,-zircon-*", "CheckOptions": [{"key": "misc-throw-by-value-catch-by-reference.CheckThrowTemporaries", "value": "0"}]}'  *.cpp  --
 ```
 
 

@@ -58,6 +58,29 @@ class FunctionDeclaration:
         self.body = []
         FunctionDeclaration.function_declares.append(self)
 
+    def calculate_length(self, lines):
+        self.len = 0
+        block_comment = False
+        for line in lines:
+            line = line.strip()
+            if len(line) == 0:
+                continue
+            left_block = len(re.findall(r'/\*', line))
+            right_block = len(re.findall(r'\*/', line))
+            if left_block > right_block:
+                if not line.startswith('/*'):
+                    self.len += 1
+                block_comment = True
+            elif left_block < right_block:
+                if not line.endswith('*/'):
+                    self.len += 1
+                block_comment = False
+            elif block_comment or line.startswith('//'):
+                continue
+            else:
+                self.len += 1
+        self.len = max(0, self.len - 1)
+
     def set_body(self, lines):
         self.body = lines
 
@@ -76,11 +99,15 @@ class Function:
         self.body_comments = 0
         self.name = func_decl.name
         self.prototype = str(func_decl)
-        self.len = func_decl.len
+        self.len = 0
 
     def add_declaration(self, func_decl):
         self.func_declarations.append(func_decl)
-        self.len += func_decl.len
+
+    def calculate_length(self):
+        self.len = 0
+        for func_decl in self.func_declarations:
+            self.len += func_decl.len
 
     def analyze_comments(self):
         self.prototype_comments = 0
@@ -162,8 +189,8 @@ def parse_functions_new(project_dir, files, silent=False, functions=None):
                 current_file = None
 
         if current_file and 'line' in line and ' default ' not in line and \
-                ('FunctionDecl' in line or 'CXXConstructorDecl' in line
-                 or 'CXXDestructorDecl' in line or 'CXXMethodDecl' in line):
+            ('FunctionDecl' in line or 'CXXConstructorDecl' in line
+             or 'CXXDestructorDecl' in line or 'CXXMethodDecl' in line):
             # print(line)
             line = line.strip()
             func_decl_lines.append((line, current_file))
@@ -199,9 +226,13 @@ def parse_functions_new(project_dir, files, silent=False, functions=None):
                     else:
                         start = max(0, func_decl.start - 20)
                     end = min(func_decl.end, len(file_contents) - 1)
+                    func_decl.calculate_length(file_contents[func_decl.start:end + 1])
                     func_decl.set_body([(x, file_contents[x]) for x in range(start, end + 1)])
-        except:
-            pass
+        except Exception as e:
+            print(e.args)
+
+    for function in functions.values():
+        function.calculate_length()
 
     return functions
 

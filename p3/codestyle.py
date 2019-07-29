@@ -26,7 +26,7 @@ def main(project_dir, silent=False):
     for func_prototype, func in functions.items():
         if func.name != 'main' and func.len >= 5:
             subroutine_count += 1
-        if func.len >= 100:
+        if func.len >= 120:
             long_function_count += 1
 
     clang_check_score += min(3, subroutine_count // 5)

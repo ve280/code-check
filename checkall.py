@@ -11,7 +11,7 @@ def check_one(project, checkers, uid, project_dir):
     for checker in checkers:
         checker_file = os.path.join(project, checker)
         p = subprocess.run("python3 %s %s --silent" % (checker_file, project_dir),
-                           shell=True, stdout=subprocess.PIPE)
+                           shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         result += p.stdout.decode().strip().split(',')
     print(result)
     return result

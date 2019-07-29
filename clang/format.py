@@ -15,7 +15,8 @@ def generate_formatted_files(project_dir, target_dir, files, silent=False):
             print('%s => %s' % (input_file, output_file))
         with open(output_file, 'wb') as f:
             p = subprocess.run("clang-format -style=WebKit %s"
-                                 % input_file, shell=True, stdout=f)
+                               % input_file, shell=True, stdout=f,
+                               stderr=silent and subprocess.PIPE or None)
             # while p.poll() is None:
             #     time.sleep(0.001)
 

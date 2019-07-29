@@ -53,7 +53,7 @@ class FunctionDeclaration:
             self.error = True
             return
         self.ret_type = args[0].strip()
-        self.args_type = map(lambda x:x.strip(), args[1:])
+        self.args_type = map(lambda x: x.strip(), args[1:])
         self.id = len(FunctionDeclaration.function_declares)
         self.body = []
         FunctionDeclaration.function_declares.append(self)
@@ -135,7 +135,8 @@ def parse_functions_new(project_dir, files, silent=False, functions=None):
     sources_path = build_full_paths(project_dir, sources)
     files_path = build_full_paths(project_dir, files)
     p = subprocess.Popen("clang-check -ast-dump %s --extra-arg='-fno-color-diagnostics' --"
-                         % ' '.join(sources_path), shell=True, stdout=subprocess.PIPE)
+                         % ' '.join(sources_path), shell=True, stdout=subprocess.PIPE,
+                         stderr=silent and subprocess.PIPE or None)
     # print(sources_path)
 
     current_file = None
@@ -160,7 +161,10 @@ def parse_functions_new(project_dir, files, silent=False, functions=None):
             if not flag:
                 current_file = None
 
-        if current_file and 'FunctionDecl' in line and 'line' in line:
+        if current_file and 'line' in line and ' default ' not in line and \
+                ('FunctionDecl' in line or 'CXXConstructorDecl' in line
+                 or 'CXXDestructorDecl' in line or 'CXXMethodDecl' in line):
+            # print(line)
             line = line.strip()
             func_decl_lines.append((line, current_file))
 
@@ -184,17 +188,20 @@ def parse_functions_new(project_dir, files, silent=False, functions=None):
         print('\nparsing cpp files:')
 
     for i, file in enumerate(files):
-        file_contents = read_file(files_path[i], silent=silent)
-        func_decls = sorted(file_func_decls[file], key=lambda x: x.start)
-        for j, func_decl in enumerate(func_decls):
-            if func_decl.end <= len(file_contents):
-                # print(j, func_decl)
-                if j > 0:
-                    start = max(func_decls[j - 1].end, func_decl.start - 20)
-                else:
-                    start = max(0, func_decl.start - 20)
-                end = min(func_decl.end, len(file_contents) - 1)
-                func_decl.set_body([(x, file_contents[x]) for x in range(start, end + 1)])
+        try:
+            file_contents = read_file(files_path[i], silent=silent)
+            func_decls = sorted(file_func_decls[file], key=lambda x: x.start)
+            for j, func_decl in enumerate(func_decls):
+                if func_decl.end <= len(file_contents):
+                    # print(j, func_decl)
+                    if j > 0:
+                        start = max(func_decls[j - 1].end, func_decl.start - 20)
+                    else:
+                        start = max(0, func_decl.start - 20)
+                    end = min(func_decl.end, len(file_contents) - 1)
+                    func_decl.set_body([(x, file_contents[x]) for x in range(start, end + 1)])
+        except:
+            pass
 
     return functions
 
@@ -251,7 +258,6 @@ def parse_comments(functions, silent=False):
             print(func)
             print('declarations: %d, body length: %d, prototype comments: %d, body comments: %d'
                   % (len(func.func_declarations), func.len, func.prototype_comments, func.body_comments))
-
 
 # functions = parse_functions_new('/home/liu/SJTU/code-check/solution/formatted',
 #                                 ['world_type.h', 'simulation.cpp', 'p3.cpp', 'simulation.h'])

@@ -1,10 +1,11 @@
 import re
 import subprocess
+import json
 
 from clang.utils import split_sources_headers, build_full_paths
 
-# ported from CLion, remove modernize-*, cert-*
-clang_tidy_checks = ','.join([
+# ported from CLion, remove modernize-*, cert-*, hicpp-*
+clang_tidy_checks = {'Checks': ','.join([
     "*",
     "-android-*",
     "-bugprone-bool-pointer-implicit-conversion",
@@ -22,21 +23,15 @@ clang_tidy_checks = ','.join([
     "-cppcoreguidelines-pro-type-reinterpret-cast",
     "-cppcoreguidelines-pro-type-union-access",
     "-cppcoreguidelines-pro-type-vararg",
+    "-cppcoreguidelines-pro-type-member-init",
     "-cppcoreguidelines-special-member-functions",
+    "-cppcoreguidelines-avoid-c-arrays",
     "-fuchsia-*",
     "-google-*",
     "google-default-arguments",
     "google-explicit-constructor",
     "google-runtime-operator",
-    "-hicpp-avoid-goto",
-    "-hicpp-braces-around-statements",
-    "-hicpp-named-parameter",
-    "-hicpp-no-array-decay",
-    "-hicpp-no-assembler",
-    "-hicpp-no-malloc",
-    "-hicpp-function-size",
-    "-hicpp-special-member-functions",
-    "-hicpp-vararg",
+    "-hicpp-*",
     "-llvm-*",
     "-objc-*",
     "-readability-else-after-return",
@@ -48,6 +43,7 @@ clang_tidy_checks = ','.join([
     "-readability-identifier-naming",
     "-readability-function-size",
     "-readability-redundant-member-init",
+    "-readability-isolate-declaration",
     "-misc-bool-pointer-implicit-conversion",
     "-misc-definitions-in-headers",
     "-misc-unused-alias-decls",
@@ -57,16 +53,18 @@ clang_tidy_checks = ','.join([
     "-clang-diagnostic-*",
     "-clang-analyzer-*",
     "-zircon-*",
-])
+]), 'CheckOptions': []}
+
+# print(json.dumps(clang_tidy_checks))
 
 
 def parse_warnings_new(project_dir, files, silent=False):
     split_sources_headers(files)
     sources, headers, _ = split_sources_headers(files)
     sources_path = build_full_paths(project_dir, sources)
-    p = subprocess.Popen("clang-tidy %s -checks=%s --extra-arg='-fno-color-diagnostics' --"
-                         % (' '.join(sources_path), clang_tidy_checks),
-                         shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p = subprocess.Popen("clang-tidy %s -config='%s' --extra-arg='-fno-color-diagnostics' --"
+                         % (' '.join(sources_path), json.dumps(clang_tidy_checks)),
+                         shell=True, stdout=subprocess.PIPE, stderr=silent and subprocess.PIPE or None)
 
     warnings = {}
     warnings_count = 0

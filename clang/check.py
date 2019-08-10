@@ -229,7 +229,8 @@ def parse_functions_new(project_dir, files, silent=False, functions=None):
                     func_decl.calculate_length(file_contents[func_decl.start:end + 1])
                     func_decl.set_body([(x, file_contents[x]) for x in range(start, end + 1)])
         except Exception as e:
-            print(e.args)
+            if not silent:
+                print(e.args)
 
     for function in functions.values():
         function.calculate_length()

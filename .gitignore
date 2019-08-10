@@ -1,9 +1,11 @@
 *.cpp
-!p2/driver/*.cpp
+!*/driver/*.cpp
+!*/driver/*.h
 *_records
 *.tar.*
 *.zip
 .idea
+*.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -1,7 +1,7 @@
 import chardet
 import re
 import os
-
+import shutil
 
 def read_file(file_path, silent=False):
     with open(file_path, 'rb') as file:
@@ -28,3 +28,9 @@ def split_sources_headers(files):
 
 def build_full_paths(project_dir, files):
     return list(map(lambda x: os.path.join(project_dir, x), files))
+
+
+def inject_driver(project_dir, driver_dir):
+    if os.path.isdir(project_dir) and os.path.isdir(driver_dir):
+        for file in os.listdir(driver_dir):
+            shutil.copy2(os.path.join(driver_dir, file), os.path.join(project_dir, file))

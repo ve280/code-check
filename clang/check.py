@@ -42,10 +42,23 @@ class FunctionDeclaration:
         if len(args) < 2:
             self.error = True
             return
-        self.name = args[-2]
+        if args[-1] == 'static':
+            self.static = True
+            if len(args) < 3:
+                self.error = True
+                return
+            self.name = args[-3]
+            splitter = shlex.shlex(args[-2], posix=True)
+        else:
+            self.static = False
+            self.name = args[-2]
+            splitter = shlex.shlex(args[-1], posix=True)
+
+        if self.name == 'main':
+            self.name += '__' + file
 
         # use another trick to split the args
-        splitter = shlex.shlex(args[-1], posix=True)
+        # splitter = shlex.shlex(args[-1], posix=True)
         splitter.whitespace = ',()'
         splitter.whitespace_split = True
         args = list(splitter)
@@ -53,7 +66,7 @@ class FunctionDeclaration:
             self.error = True
             return
         self.ret_type = args[0].strip()
-        self.args_type = map(lambda x: x.strip(), args[1:])
+        self.args_type = list(map(lambda x: x.strip(), args[1:]))
         self.id = len(FunctionDeclaration.function_declares)
         self.body = []
         FunctionDeclaration.function_declares.append(self)
@@ -85,7 +98,8 @@ class FunctionDeclaration:
         self.body = lines
 
     def __str__(self):
-        return '%s %s(%s)' % (self.ret_type, self.name, ', '.join(self.args_type))
+        prefix = self.static and 'static ' or ''
+        return '%s%s %s(%s)' % (prefix, self.ret_type, self.name, ', '.join(self.args_type))
 
     @staticmethod
     def get_by_id(_id):
@@ -189,8 +203,8 @@ def parse_functions_new(project_dir, files, silent=False, functions=None):
                 current_file = None
 
         if current_file and 'line' in line and ' default ' not in line and \
-            ('FunctionDecl' in line or 'CXXConstructorDecl' in line
-             or 'CXXDestructorDecl' in line or 'CXXMethodDecl' in line):
+                ('FunctionDecl' in line or 'CXXConstructorDecl' in line
+                 or 'CXXDestructorDecl' in line or 'CXXMethodDecl' in line):
             # print(line)
             line = line.strip()
             func_decl_lines.append((line, current_file))
@@ -209,7 +223,7 @@ def parse_functions_new(project_dir, files, silent=False, functions=None):
                 functions[func_prototype].add_declaration(func_decl)
             file_func_decls[file].append(func_decl)
         elif not silent:
-            print('error occurred in %s', line)
+            print('error occurred in %s' % line)
 
     if not silent:
         print('\nparsing cpp files:')

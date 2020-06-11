@@ -1,61 +1,42 @@
-# Code Check
-
-This repository includes all static code analysis of projects in ve280. 
-`clang` and its tools are used to perform the various code checks.
-We are planing to embed these checks into JOJ (in the future).
+# Project 1 Grading Criteria
 
 
-## Prerequisite
-
-We use `Python>=3.6` and `Clang>=6` to develop the tests.
-
-On Ubuntu, install them with
-
-```bash
-sudo apt install python3 python3-pip
-sudo apt install clang clang-tools clang-format clang-tidy
-pip3 install -r requirements.txt
-```
-
-## Usage
-
-### For Students
-
-Directly run the code check by (p1 as example):
-
-```bash
-PYTHONPATH=. python3 p1/codestyle.py <your_project_dir>
-```
-
-### For TAs
-
-First, download the zip of all submission of the project from JOJ, for example, `p1_records.zip`.
-
-Second, uncompress the file with `preprocess/uncompress.py`.
-
-```bash
-python3 preprocess/uncompress.py p1_records.zip
-```
-
-At last, use the `checkall.py` to generate the result in a csv file (`p1_code_check.csv`):
-
-```bash
-python3 checkall.py p1
-```
-
-## Clang Tidy Arguments
-
-You can directly test `clang-tidy` warnings by
-```bash
-clang-tidy -config='{"Checks": "*,-android-*,-bugprone-bool-pointer-implicit-conversion,-bugprone-exception-escape,-cert-*,-cppcoreguidelines-*,-fuchsia-*,-google-*,google-default-arguments,google-explicit-constructor,google-runtime-operator,-hicpp-*,-llvm-*,-objc-*,-readability-else-after-return,-readability-implicit-bool-conversion,-readability-magic-numbers,-readability-named-parameter,-readability-simplify-boolean-expr,-readability-braces-around-statements,-readability-identifier-naming,-readability-function-size,-readability-redundant-member-init,-readability-isolate-declaration,-readability-redundant-control-flow,-misc-bool-pointer-implicit-conversion,-misc-definitions-in-headers,-misc-unused-alias-decls,-misc-unused-parameters,-misc-unused-using-decls,-modernize-*,-clang-diagnostic-*,-clang-analyzer-*,-zircon-*", "CheckOptions": [{"key": "misc-throw-by-value-catch-by-reference.CheckThrowTemporaries", "value": "0"}]}'  *.cpp  --
-```
+## Composition
+1. Correctness: 90%
+2. Codestyle: 10%
 
 
-## General Styles
+## Correctness [90 points]
+The correctness score depends on how many test cases you pass on JOJ.
 
-1) Appropriate use of indenting and white space
-2) Program appropriately split into subroutines
-3) Variable and function names that reflect their use
-4) Informative comments at the head of each function.
+#### JOJ Test Cases
+* Pretest: `case1` ~ `case5`
+* Triangle: `case6` ~ `case17`
+* Palindrome: `case18` ~ `case27`
+* Power: `case28` ~ `case39`
+* Abundant: `case40` ~ `case53`
+* Invalid: `case54` ~ `case64`
 
 
+## Codestyle [10 points]
+
+#### clang-check [6 points]
+Number of subroutines:
+1. \>=4 subroutines [2 points]
+2. 2-3 subroutines [1 point]
+3. 0-1 subroutine [0 point]
+
+Number of comments:
+1. \>=2 subroutines: 1 point for each function containing >=1 comment, at most [4 points]
+2. 0-1 subroutines: exist a function with >=5 comments [2 points]
+
+#### clang-tidy [4 points]
+Number of warning types:
+1. 0-2 types [2 points]
+2. 3-5 types [1 point]
+3. \>=6 types [0 point]
+
+Number of warnings:
+1. 0-5 warnings [2 points]
+2. 6-11 warnings [1 point]
+3. \>=12 warnings [0 point]

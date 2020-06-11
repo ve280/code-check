@@ -1,61 +1,61 @@
-# Code Check for Project 1
+# Code Check
+
+This repository includes all static code analysis of projects in ve280. 
+`clang` and its tools are used to perform the various code checks.
+We are planing to embed these checks into JOJ (in the future).
+
+
+## Prerequisite
+
+We use `Python>=3.6` and `Clang>=6` to develop the tests.
+
+On Ubuntu, install them with
+
+```bash
+sudo apt install python3 python3-pip
+sudo apt install clang clang-tools clang-format clang-tidy
+pip3 install -r requirements.txt
+```
 
 ## Usage
 
+### For Students
+
+Directly run the code check by (p1 as example):
+
 ```bash
-codestyle.py [-h] [-v VERBOSE] project_dir
+PYTHONPATH=. python3 p1/codestyle.py <your_project_dir>
 ```
 
-Use the silent option to batch all of the submissions.
+### For TAs
 
-## Checks and Grading Policy
+First, download the zip of all submission of the project from JOJ, for example, `p1_records.zip`.
 
-### clang-check [6 marks]
+Second, uncompress the file with `preprocess/uncompress.py`.
 
-`clang-check` is used to generate the ast tree from the source file `p1.cpp` and 
-check general style 1) and 4).
+```bash
+python3 preprocess/uncompress.py p1_records.zip
+```
 
-First, we use the `-ast-dump` argument to find the existence of subroutines (functions)
-and their range.
+At last, use the `checkall.py` to generate the result in a csv file (`p1_code_check.csv`):
 
-Second, based on the ranges, we try to find whether there are informative comments 
-at the head of each function (or in the body of the function).
+```bash
+python3 checkall.py p1
+```
 
-A valid comment line must contain more than five non-space characters.
+## Clang Tidy Arguments
 
-The detailed grading policy is:
-+ there are 2-3 subroutines [1 mark]
-+ there are 4+ subroutines [1 mark]
-+ there is at least one line of comment in any function [at most 4 marks]
-
-For those who only have 0-1 subroutines:
-+ there are 5+ lines of comments in any function [1 mark]
-
-For example, if you only have a `main` function, with 5 lines of comments in it, 
-you will get 2 marks for this part.
+You can directly test `clang-tidy` warnings by
+```bash
+clang-tidy -config='{"Checks": "*,-android-*,-bugprone-bool-pointer-implicit-conversion,-bugprone-exception-escape,-cert-*,-cppcoreguidelines-*,-fuchsia-*,-google-*,google-default-arguments,google-explicit-constructor,google-runtime-operator,-hicpp-*,-llvm-*,-objc-*,-readability-else-after-return,-readability-implicit-bool-conversion,-readability-magic-numbers,-readability-named-parameter,-readability-simplify-boolean-expr,-readability-braces-around-statements,-readability-identifier-naming,-readability-function-size,-readability-redundant-member-init,-readability-isolate-declaration,-readability-redundant-control-flow,-misc-bool-pointer-implicit-conversion,-misc-definitions-in-headers,-misc-unused-alias-decls,-misc-unused-parameters,-misc-unused-using-decls,-modernize-*,-clang-diagnostic-*,-clang-analyzer-*,-zircon-*", "CheckOptions": [{"key": "misc-throw-by-value-catch-by-reference.CheckThrowTemporaries", "value": "0"}]}'  *.cpp  --
+```
 
 
-### clang-tidy [4 marks]
+## General Styles
 
-`clang-tidy` is used to check general style 3). A report consists of intolerable warnings 
-is generated and we will count the numbers and types of the warnings and give a deduction.
-
-The detailed grading policy is:
-
-For the types of warnings generated,
-+ 0-2 types of warnings generated [2 marks]
-+ 3-5 types of warnings generated [1 mark]
-+ 6+ types of warnings generated [0 mark]
-
-For the number of warnings generated,
-+ 0-5 warnings generated [2 marks]
-+ 6-11 warnings generated [1 mark]
-+ 12+ warnings generated [0 mark]
+1) Appropriate use of indenting and white space
+2) Program appropriately split into subroutines
+3) Variable and function names that reflect their use
+4) Informative comments at the head of each function.
 
 
-
-## Contributors
-
-Designed by Yihao Liu ([tc-imba](https://github.com/tc-imba))
-
-`clang-tidy` tested by Xiaohan Fu ([Reapor-Yurnero](https://github.com/Reapor-Yurnero))

@@ -19,6 +19,11 @@ pip3 install -r requirements.txt
 
 ## Usage
 
+```bash
+git clone https://github.com/ve280/code-check.git
+cd code-check
+```
+
 ### For Students
 
 Directly run the code check by (p1 as example):

@@ -5,6 +5,7 @@ import os
 import clang.check
 import clang.tidy
 
+
 def main(project_dir,silent=False):
     # get functions
     main_cpp_name="p1.cpp"
@@ -64,7 +65,8 @@ def main(project_dir,silent=False):
         print("\n")
         print("clang-check score: %d" %clang_check_score)
         print("clang-tidy score: %d" %clang_tidy_score)
-    
+
+
 # parse program args and call main
 parser = argparse.ArgumentParser(description='Project 1 Code Checker.')
 parser.add_argument('--silent', action='store_true')

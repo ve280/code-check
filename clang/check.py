@@ -58,7 +58,6 @@ class FunctionDeclaration:
             self.name += '__' + file
 
         # use another trick to split the args
-        # splitter = shlex.shlex(args[-1], posix=True)
         splitter.whitespace = ',()'
         splitter.whitespace_split = True
         args = list(splitter)
@@ -127,40 +126,40 @@ class Function:
         self.prototype_comments = 0
         self.body_comments = 0
 
-        def add_comment(line):
+        def add_comment(line, is_prototype):
             if not block_comment:
                 line = ''.join(re.findall(r'//(.+)', line, re.DOTALL))
             line = re.sub(r'[/*\s]', '', line)
             if len(line) > 5:
-                if state < 2:
+                if is_prototype:
                     self.prototype_comments += 1
                 else:
                     self.body_comments += 1
 
         for func_decl in self.func_declarations:
-            state = 0
+            is_prototype = func_decl.start == func_decl.end
             block_comment = False
             for i, line in func_decl.body:
                 line = line.strip()
                 if len(line) == 0:
-                    if i > func_decl.start:
-                        state += 1
                     continue
                 left_block = len(re.findall(r'/\*', line))
                 right_block = len(re.findall(r'\*/', line))
                 if left_block > right_block:
                     block_comment = True
-                    add_comment(line)
+                    add_comment(line, is_prototype)
                 elif left_block < right_block:
-                    add_comment(line)
+                    add_comment(line, is_prototype)
                     block_comment = False
                 elif block_comment:
-                    add_comment(line)
+                    add_comment(line, is_prototype)
+                elif left_block == right_block and left_block > 0:
+                    block_comment = True
+                    add_comment(line, is_prototype)
+                    block_comment = False
                 elif '//' in line:
                     line = line[line.find('//'):]
-                    add_comment(line)
-                elif i > func_decl.start:
-                    state += 1
+                    add_comment(line, is_prototype)
 
     def __str__(self):
         return self.prototype
@@ -178,12 +177,11 @@ def parse_functions_new(project_dir, files, silent=False, functions=None):
     p = subprocess.Popen("clang-check -ast-dump %s --extra-arg='-fno-color-diagnostics' --"
                          % ' '.join(sources_path), shell=True, stdout=subprocess.PIPE,
                          stderr=silent and subprocess.PIPE or None)
-    # print(sources_path)
 
     current_file = None
 
     if not silent:
-        print('parsing function declarations:')
+        print('\nparsing function declarations:')
 
     func_decl_lines = []
 
@@ -195,17 +193,17 @@ def parse_functions_new(project_dir, files, silent=False, functions=None):
             flag = False
             for i, file_path in enumerate(files_path):
                 if file_path in file_name:
-                    # print(files[i], line)
                     current_file = files[i]
                     flag = True
                     break
             if not flag:
                 current_file = None
 
-        if current_file and 'line' in line and ' default ' not in line and \
-                ('FunctionDecl' in line or 'CXXConstructorDecl' in line
-                 or 'CXXDestructorDecl' in line or 'CXXMethodDecl' in line):
-            # print(line)
+        decl = 'FunctionDecl' in line \
+               or 'CXXConstructorDecl' in line \
+               or 'CXXDestructorDecl' in line \
+               or 'CXXMethodDecl' in line
+        if current_file and ' default ' not in line and decl:
             line = line.strip()
             func_decl_lines.append((line, current_file))
 
@@ -234,12 +232,23 @@ def parse_functions_new(project_dir, files, silent=False, functions=None):
             func_decls = sorted(file_func_decls[file], key=lambda x: x.start)
             for j, func_decl in enumerate(func_decls):
                 if func_decl.end <= len(file_contents):
-                    # print(j, func_decl)
+                    """
                     if j > 0:
                         start = max(func_decls[j - 1].end, func_decl.start - 20)
                     else:
                         start = max(0, func_decl.start - 20)
                     end = min(func_decl.end, len(file_contents) - 1)
+                    """
+                    start = func_decl.start - 2
+                    end = func_decl.end
+                    while file_contents[start].startswith('/'):
+                        if start == 0:
+                            break
+                        start -= 1
+                    while file_contents[end].startswith('/'):
+                        if end == len(file_contents) - 1:
+                            break
+                        end += 1
                     func_decl.calculate_length(file_contents[func_decl.start:end + 1])
                     func_decl.set_body([(x, file_contents[x]) for x in range(start, end + 1)])
         except Exception as e:
@@ -259,7 +268,7 @@ def parse_functions(main_cpp_name, main_cpp_path, silent=False):
     functions = {}
 
     if not silent:
-        print('parsing function declarations:')
+        print('\nparsing function declarations:')
     while p.poll() is None:
         line = p.stdout.readline().decode('utf-8')
         if main_cpp_name in line:
@@ -299,12 +308,10 @@ def parse_comments(functions, silent=False):
     if not silent:
         print('\nparsing function comments:')
     for func_prototype, func in functions.items():
+        if func.len == 0:
+            continue
         func.analyze_comments()
         if not silent:
             print(func)
             print('declarations: %d, body length: %d, prototype comments: %d, body comments: %d'
                   % (len(func.func_declarations), func.len, func.prototype_comments, func.body_comments))
-
-# functions = parse_functions_new('/home/liu/SJTU/code-check/solution/formatted',
-#                                 ['world_type.h', 'simulation.cpp', 'p3.cpp', 'simulation.h'])
-# parse_comments(functions)

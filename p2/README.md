@@ -24,7 +24,7 @@ The correctness score depends on how many test cases you pass on JOJ.
   2. 5-10 subroutines [0.5 points]
   3. 0-5 subroutine [0 points]
 
-* **Length of functions **[1 point]
+* **Length of functions** [1 point]
 
   Your main functions should be no longer than 50 lines and non-main functions should be no more than 150 lines.
 

@@ -63,3 +63,5 @@ The total clang-check score will round **down** to the nearest integer, *i.e.* 3
   1. 0-2 warnings [2 points]
   2. 2-5 warnings [1 point]
   3. More than 5 warnings [0 points]
+
+See clang-tidy flags in https://github.com/ve280/code-check/blob/master/clang/tidy.py

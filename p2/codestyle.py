@@ -48,7 +48,13 @@ def main(project_dir, silent=False):
         # Checkpoint 4: Function declaration comments (REQUIRES, MODIFIES, EFFECTS)
         # Requirement: All functions should have RME in their declaration.
         if func.prototype_comments == 0:
-            if func.name != 'Exception_t' and func.name != 'inline':
+            tolerance = ['Exception_t', 'bool', 'operator', 'static', 'inline']
+            flag = True
+            for entity in tolerance:
+                if func.name == entity:
+                    flag = False
+                    break
+            if flag:
                 print("{} is not commented under declaration.".format(func.name))
                 uncomment_prototype_cnt += 1
 

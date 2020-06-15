@@ -48,6 +48,7 @@ def main(project_dir, silent=False):
         # Checkpoint 4: Function declaration comments (REQUIRES, MODIFIES, EFFECTS)
         # Requirement: All functions should have RME in their declaration.
         if func.prototype_comments == 0:
+            print(func.name)
             uncomment_prototype_cnt += 1
 
         # Checkpoint 5: Function body comments

@@ -308,7 +308,7 @@ def parse_comments(functions, silent=False):
     if not silent:
         print('\nparsing function comments:')
     for func_prototype, func in functions.items():
-        if func.len == 0:
+        if func.name == "inline" and func.len == 0:
             continue
         func.analyze_comments()
         if not silent:

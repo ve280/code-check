@@ -6,7 +6,7 @@ import shutil
 def read_file(file_path, silent=False):
     with open(file_path, 'rb') as file:
         bytes_str = file.read()
-        charset = chardet.detect(bytes_str)['encoding']
+        charset = chardet.detect(bytes_str)['encoding'] or 'utf-8'
         if not silent:
             print('%s: encoding: %s' % (file_path, charset))
         return bytes_str.decode(charset).split('\n')

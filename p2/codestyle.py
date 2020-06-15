@@ -13,7 +13,7 @@ def main(project_dir, silent=False):
     # Formatting initialization
     files = ['server_type.h', 'simulation.cpp', 'p2.cpp', 'simulation.h']
     format_dir = os.path.join(project_dir, 'formatted')
-    simulation_cpp_files = ['simulation.cpp', 'simulation.h']
+    simulation_cpp_files = ['server_type.h', 'simulation.cpp', 'simulation.h']
     main_cpp_name = 'p2.cpp'
     main_cpp_path = os.path.join(project_dir, main_cpp_name)
 
@@ -48,8 +48,9 @@ def main(project_dir, silent=False):
         # Checkpoint 4: Function declaration comments (REQUIRES, MODIFIES, EFFECTS)
         # Requirement: All functions should have RME in their declaration.
         if func.prototype_comments == 0:
-            print(func.name)
-            uncomment_prototype_cnt += 1
+            if func.name != 'Exception_t' and func.name != 'inline':
+                print("{} is not commented under declaration.".format(func.name))
+                uncomment_prototype_cnt += 1
 
         # Checkpoint 5: Function body comments
         # Requirement: the length of function // the number of comments < 50.

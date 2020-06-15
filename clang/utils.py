@@ -3,6 +3,7 @@ import re
 import os
 import shutil
 
+
 def read_file(file_path, silent=False):
     with open(file_path, 'rb') as file:
         bytes_str = file.read()

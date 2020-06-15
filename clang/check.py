@@ -241,11 +241,11 @@ def parse_functions_new(project_dir, files, silent=False, functions=None):
                     """
                     start = func_decl.start - 2
                     end = func_decl.end
-                    while file_contents[start].startswith('/'):
+                    while file_contents[start].startswith('/') or "*" in file_contents[start]:
                         if start == 0:
                             break
                         start -= 1
-                    while file_contents[end].startswith('/'):
+                    while file_contents[end].startswith('/') or "*" in file_contents[start]:
                         if end == len(file_contents) - 1:
                             break
                         end += 1
@@ -308,7 +308,7 @@ def parse_comments(functions, silent=False):
     if not silent:
         print('\nparsing function comments:')
     for func_prototype, func in functions.items():
-        if func.name == "inline" and func.len == 0:
+        if func.name == "inline":
             continue
         func.analyze_comments()
         if not silent:

@@ -8,6 +8,7 @@ import argparse
 from pprint import pprint
 import chardet
 
+from clang.utils import read_file
 
 class FunctionDeclaration:
     function_declares = []
@@ -83,14 +84,6 @@ class Function:
     def __str__(self):
         return self.prototype
 
-
-def read_file(file_path, silent=False):
-    with open(file_path, 'rb') as file:
-        bytes_str = file.read()
-        charset = chardet.detect(bytes_str)['encoding']
-        if not silent:
-            print('encoding: %s' % charset)
-        return bytes_str.decode(charset).split('\n')
 
 
 def main(project_dir, silent=False):

@@ -24,7 +24,7 @@ The correctness score depends on how many test cases you pass on JOJ.
   2. 5-10 subroutines [0.5 points]
   3. 0-5 subroutine [0 points]
 
-* **Length of functions **[1 point]
+* **Length of functions** [1 point]
 
   Your main functions should be no longer than 50 lines and non-main functions should be no more than 150 lines.
 
@@ -63,3 +63,5 @@ The total clang-check score will round **down** to the nearest integer, *i.e.* 3
   1. 0-2 warnings [2 points]
   2. 2-5 warnings [1 point]
   3. More than 5 warnings [0 points]
+
+See clang-tidy flags in https://github.com/ve280/code-check/blob/master/clang/tidy.py

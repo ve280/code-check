@@ -61,6 +61,7 @@ def parse_warnings_new(project_dir, files, silent=False):
 
     if not silent:
         print('\nparsing clang-tidy results:')
+        print('Ignore the following warnings, if they are suspended.')
     while p.poll() is None:
         line = p.stdout.readline().decode('utf-8').strip()
         res = re.findall(r'warning:.*?\[(.*?)\]', line)

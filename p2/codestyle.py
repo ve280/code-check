@@ -49,7 +49,7 @@ def main(project_dir, silent=False):
         # Requirement: All functions should have RME in their declaration.
         if func.prototype_comments == 0:
             tolerance = ['Exception_t', 'bool', 'operator', 'static', 'inline']
-            flag = True
+            flag = len(func.func_declarations)>1
             for entity in tolerance:
                 if func.name == entity:
                     flag = False

@@ -8,7 +8,7 @@ We will count how many lines you have in each function by counting the number of
 
 ## Self-check
 
-1. Please download **the new version of `clang` folder here** the script `lineCheck.py`. (For the code style part, please use the old one.)
+1. Please download **the new version of `clang` folder here** as well as the script `lineCheck.py`. (For the code style part, please use the old one.)
 
 2. Your working directory should look like this:
 

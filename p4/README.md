@@ -4,7 +4,7 @@
 ## Composition
 1. Correctness: 80%
 2. General coding style: 10%
-3. BinaryTree Coding Style: 10%
+3. `BinaryTree.cpp` check (number of lines in each function definition): 10%
 
 
 ## Correctness [80 points]

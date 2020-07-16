@@ -18,6 +18,10 @@ def main(project_dir, silent=False):
     compress_cpp_path = os.path.join(project_dir, main_cpp_files[0])
     decompress_cpp_path = os.path.join(project_dir, main_cpp_files[1])
 
+    driver_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'driver')
+    clang.utils.inject_driver(project_dir, driver_dir)
+    clang.utils.inject_driver(format_dir, driver_dir)
+
     # Clang checkings
     clang.format.generate_formatted_files(project_dir, format_dir, files, silent=silent)
     clang_check_score = 0
@@ -48,7 +52,7 @@ def main(project_dir, silent=False):
 
         # Checkpoint 4: Function declaration comments (REQUIRES, MODIFIES, EFFECTS)
         # Requirement: All functions should have RME in their declaration.
-        if func.prototype_comments == 0:
+        if func.name != 'main' and func.prototype_comments == 0:
             tolerance = ['Exception_t', 'bool', 'operator', 'static', 'inline']
             flag = len(func.func_declarations)>1
             for entity in tolerance:
@@ -67,7 +71,7 @@ def main(project_dir, silent=False):
         elif func.len // func.body_comments >= 50:
             poorly_commented_cnt += 1
 
-    clang_check_score += min(2, subroutine_count // 5)
+    clang_check_score += min(2, subroutine_count // 1.5)
     clang_check_score += max(0, 2 - long_function_count)
     clang_check_score += max(0, 3 - uncomment_prototype_cnt)
     clang_check_score += max(0, 3 - poorly_commented_cnt)

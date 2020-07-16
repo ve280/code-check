@@ -10,11 +10,8 @@ import itertools
 
 
 def main(project_dir, silent=False):
-    funcs_to_test = ['size', 'memberOf', 'dot', 'isIncreasing', 'reverse', 'append', 'isArithmeticSequence',
-                     'filter_odd', 'filter', 'unique', 'insert_list', 'chop', 'tree_sum', 'tree_search', 'depth',
-                     'tree_max', 'traversal', 'tree_hasMonotonicPath', 'tree_allPathSumGreater', 'covered_by',
-                     'contained_by', 'insert_tree']
-    main_cpp_name = 'p2.cpp'
+    funcs_to_test = ['~BinaryTree', 'findPath', 'sum', 'depth', 'preorder_sum', 'inorder_str', 'postorder_num', 'allPathSumGreater', 'covered_by', 'contained_by', 'copy']
+    main_cpp_name = 'binaryTree.cpp'
     main_cpp_path = os.path.join(project_dir, main_cpp_name)
 
     p = subprocess.Popen("clang-check -ast-dump %s --extra-arg='-fno-color-diagnostics' --" % main_cpp_path, shell=True,
@@ -64,7 +61,7 @@ def main(project_dir, silent=False):
         print('Non-recursive functions: %s' % non_rec_funcs)
 
 
-parser = argparse.ArgumentParser(description='Project 2 Recursion Checker.')
+parser = argparse.ArgumentParser(description='Project 4 Recursion Checker.')
 parser.add_argument('--silent', action='store_true')
 parser.add_argument('project_dir', type=str, nargs=1)
 args = parser.parse_args()

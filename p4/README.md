@@ -1,4 +1,4 @@
-# Code Check for Project 2
+# Code Check for Project 4
 
 ## Usage
 
@@ -13,7 +13,7 @@ Use the silent option to batch all of the submissions.
 
 ### clang-check [6 marks]
 
-`clang-check` is used to generate the ast tree from the source file `p2.cpp` and 
+`clang-check` is used to generate the ast tree from the source file `binaryTree.cpp` and 
 check number of lines in each function.
 
 For each function that exceeds 50 lines, 1 point is deducted, until 6 such functions are found.
@@ -41,7 +41,7 @@ For the number of warnings generated,
 `networkx` is used to check if each function implementation contains recursion. 
 
 Firstly, we extract the function declarations and all function calls inside function definitions 
-from the ast tree of `p2.cpp`. Each pair of defined function and helper function called inside 
+from the ast tree of `binaryTree.cpp`. Each pair of defined function and helper function called inside 
 definition is added as an edge to `networkx`'s graph.
 
 Secondly, we use `networkx.simple_cycles` to find all recursive functions. This handles both 
@@ -54,11 +54,11 @@ void func1() { func2(); }
 void func2() { func1(); }
 ```
 
-Thirdly, we check whether each function listed in `p2.h` calls any recursive function directly or 
+Thirdly, we check whether each function listed in `binaryTree.h` calls any recursive function directly or 
 indirectly. This is done by using `networkx.all_simple_paths`, with the implemented function as 
 the `source`, and any recursive function as the `target`. 
 
-If any `p2.h` function definition is found to contain no recursion, all points of JOJ test cases 
+If any `binaryTree.h` function definition is found to contain no recursion, all points of JOJ test cases 
 related to this function will be deducted. Additionally, we deduct one point from the `clang-check` 
 section, since the function's code style doesn't meet the requirements either.
 

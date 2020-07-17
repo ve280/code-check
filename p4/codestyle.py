@@ -14,22 +14,19 @@ def main(project_dir, silent=False):
     files = ['binaryTree.cpp', 'compress.cpp', 'decompress.cpp']
     format_dir = os.path.join(project_dir, 'formatted')
     main_cpp_files = ['compress.cpp', 'decompress.cpp']
-    # tree_cpp_name = 'binaryTree.cpp'
-    compress_cpp_path = os.path.join(project_dir, main_cpp_files[0])
-    decompress_cpp_path = os.path.join(project_dir, main_cpp_files[1])
 
+    # Clang checkings
+    clang.format.generate_formatted_files(project_dir, format_dir, files, silent=silent)
+    
     driver_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'driver')
     clang.utils.inject_driver(project_dir, driver_dir)
     clang.utils.inject_driver(format_dir, driver_dir)
 
-    # Clang checkings
-    clang.format.generate_formatted_files(project_dir, format_dir, files, silent=silent)
     clang_check_score = 0
     subroutine_count = 0
     long_function_count = 0
     uncomment_prototype_cnt = 0
     poorly_commented_cnt = 0
-
 
     functions = clang.check.parse_functions_new(format_dir, main_cpp_files, silent=silent)
     clang.check.parse_comments(functions, silent=silent)

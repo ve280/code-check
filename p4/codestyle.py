@@ -17,7 +17,7 @@ def main(project_dir, silent=False):
 
     # Clang checkings
     clang.format.generate_formatted_files(project_dir, format_dir, files, silent=silent)
-    
+
     driver_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'driver')
     clang.utils.inject_driver(project_dir, driver_dir)
     clang.utils.inject_driver(format_dir, driver_dir)
@@ -39,7 +39,7 @@ def main(project_dir, silent=False):
                 long_function_count += 1
 
         # Checkpoint 2: Non-main function amount
-        # Requirement: Program should be split into at least 10 non-main functions.
+        # Requirement: Program should be split into at least 2 non-main functions.
         if not mainfunc and func.len >= 1:
             subroutine_count += 1
 

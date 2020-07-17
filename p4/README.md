@@ -18,8 +18,8 @@ The correctness score depends on how many test cases you pass on JOJ.
 
   Your program should be split into at least 3 non-main functions for *compress.cpp* and *decompress.cpp*.
 
-  1. 3 or more subroutines [1 point]
-  2. 1-2 subroutines [0.5 points]
+  1. 2 or more subroutines [1 point]
+  2. 1 subroutines [0.5 points]
   3. 0 subroutine [0 points]
 
 * **Length of functions** [1 point]

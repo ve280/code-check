@@ -34,25 +34,26 @@ def main(project_dir, silent=False):
     functions = clang.check.parse_functions_new(format_dir, main_cpp_files, silent=silent)
     clang.check.parse_comments(functions, silent=silent)
     for func_prototype, func in functions.items():
+        mainfunc = (func.name == 'main__compress.cpp' or func.name == 'main__decompress.cpp')
         # Checkpoint 1: Main function length
         # Requirement: Main function should be no longer than 50 physical lines.
-        if func.name == 'main':
+        if mainfunc:
             if func.func_declarations[0].end - func.func_declarations[0].start >= 50:
                 long_function_count += 1
 
         # Checkpoint 2: Non-main function amount
         # Requirement: Program should be split into at least 10 non-main functions.
-        if func.name != 'main' and func.len >= 1:
+        if not mainfunc and func.len >= 1:
             subroutine_count += 1
 
         # Checkpoint 3: Non-main function length and amount
         # Requirement: Non-main functions should be no longer than 150 physical lines.
-        if func.name != 'main' and func.len >= 150:
+        if not mainfunc and func.len >= 150:
             long_function_count += 1
 
         # Checkpoint 4: Function declaration comments (REQUIRES, MODIFIES, EFFECTS)
         # Requirement: All functions should have RME in their declaration.
-        if func.name != 'main' and func.prototype_comments == 0:
+        if not mainfunc and func.prototype_comments == 0:
             tolerance = ['Exception_t', 'bool', 'operator', 'static', 'inline']
             flag = len(func.func_declarations)>1
             for entity in tolerance:
@@ -71,7 +72,7 @@ def main(project_dir, silent=False):
         elif func.len // func.body_comments >= 50:
             poorly_commented_cnt += 1
 
-    clang_check_score += min(2, subroutine_count // 1.5)
+    clang_check_score += min(2, subroutine_count // 1)
     clang_check_score += max(0, 2 - long_function_count)
     clang_check_score += max(0, 3 - uncomment_prototype_cnt)
     clang_check_score += max(0, 3 - poorly_commented_cnt)

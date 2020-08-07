@@ -13,9 +13,6 @@ def main(project_dir, silent=False):
     # params
     clang_check_score = 0
     clang_tidy_score = 0
-    subroutine_count = 0
-    long_function_count = 0
-    poorly_commented_cnt = 0
 
     files_total = [['rpn.cpp'], ['cache.cpp']]
     main_function_name_total = ['main__rpn.cpp', 'main__cache.cpp']
@@ -23,6 +20,9 @@ def main(project_dir, silent=False):
     for i in range(len(files_total)):
         files = files_total[i]
         main_function_name = main_function_name_total[i]
+        subroutine_count = 0
+        long_function_count = 0
+        poorly_commented_cnt = 0
 
         # --------------------------- clang-check ---------------------------
         # parse and record error

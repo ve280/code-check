@@ -65,7 +65,7 @@ list_make()
 
     try {
         newp = new struct list_node;
-    } catch (bad_alloc a) {
+    } catch (bad_alloc &a) {
         not_allocated();
     }
 
@@ -83,7 +83,7 @@ list_make(int elt, list_t list)
 
     try {
         newp = new struct list_node;
-    } catch (bad_alloc a) {
+    } catch (bad_alloc &a) {
         not_allocated();
     }
 
@@ -182,7 +182,7 @@ tree_make()
 
     try {
         tnp = new struct tree_node;
-    } catch (bad_alloc a) {
+    } catch (bad_alloc &a) {
         not_allocated();
     }
 
@@ -200,7 +200,7 @@ tree_make(int elt, tree_t left, tree_t right)
 
     try {
         tnp = new struct tree_node;
-    } catch (bad_alloc a) {
+    } catch (bad_alloc &a) {
         not_allocated();
     }
 

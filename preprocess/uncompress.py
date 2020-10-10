@@ -58,8 +58,16 @@ def main(file):
         if unzip(file, tempdir) == 0:
             error = 0
             success = 0
-            for file in os.listdir(tempdir):
-                record_file = os.path.join(tempdir, file)
+            file_list = os.listdir(tempdir)
+
+            # If zipFile.extractAll create a directory
+            if len(file_list) == 1 and os.path.isdir(os.path.join(tempdir, file_list[0])):
+                record_dir = os.path.join(tempdir, file_list[0])
+            else:
+                record_dir = tempdir
+
+            for file in os.listdir(record_dir):
+                record_file = os.path.join(record_dir, file)
                 record_filename, record_ext = os.path.splitext(file)
                 record_dest = os.path.join(filename, record_filename)
                 if record_ext == '.zip':

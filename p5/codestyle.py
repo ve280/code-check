@@ -12,10 +12,11 @@ import clang.format
 def main(project_dir, silent=False):
     # params
     clang_check_score = 0
-    clang_tidy_score = 0
+    # mute clang-tidy check
+    # clang_tidy_score = 0
 
-    files_total = [['rpn.cpp'], ['cache.cpp']]
-    main_function_name_total = ['main__rpn.cpp', 'main__cache.cpp']
+    files_total = [['call.cpp'], ['cleaner.cpp']]
+    main_function_name_total = ['main__call.cpp', 'main__cleaner.cpp']
 
     for i in range(len(files_total)):
         files = files_total[i]
@@ -49,9 +50,12 @@ def main(project_dir, silent=False):
         if subroutine_count >= 2:
             clang_check_score += 1
         if long_function_count == 0:
-            clang_check_score += 1
+            clang_check_score += 2
         if poorly_commented_cnt == 0:
+            clang_check_score += 2
+        elif poorly_commented_cnt == 1: # one poorly commented function
             clang_check_score += 1
+        
         if not silent:
             print("--------------------")
             print("clang-check summary:")
@@ -61,29 +65,32 @@ def main(project_dir, silent=False):
             print("accumulative clang-check score:", clang_check_score)
             print("--------------------")
 
-        # --------------------------- clang-tidy ---------------------------
-        # parse and record error
-        clang_tidy_warnings, clang_tidy_warnings_count = clang.tidy.parse_warnings_new(project_dir, files, silent=silent)
+        # mute clang-tidy check
+        # # --------------------------- clang-tidy ---------------------------
+        # # parse and record error
+        # clang_tidy_warnings, clang_tidy_warnings_count = clang.tidy.parse_warnings_new(project_dir, files, silent=silent)
 
-        # clang-tidy score
-        if clang_tidy_warnings_count <= 5:
-            clang_tidy_score += 1
-        elif clang_tidy_warnings_count <= 10:
-            clang_tidy_score += 0.5
-        if len(clang_tidy_warnings) <= 2:
-            clang_tidy_score += 1
-        elif len(clang_tidy_warnings) <= 5:
-            clang_tidy_score += 0.5
-        if not silent:
-            print("--------------------")
-            print("clang-tidy summary:")
-            print("Number of warning types:", clang_tidy_warnings_count)
-            print("Number of warnings:", len(clang_tidy_warnings))
-            print("accumulative clang-tidy score:", clang_tidy_score)
-            print("--------------------")
+        # # clang-tidy score
+        # if clang_tidy_warnings_count <= 5:
+        #     clang_tidy_score += 1
+        # elif clang_tidy_warnings_count <= 10:
+        #     clang_tidy_score += 0.5
+        # if len(clang_tidy_warnings) <= 2:
+        #     clang_tidy_score += 1
+        # elif len(clang_tidy_warnings) <= 5:
+        #     clang_tidy_score += 0.5
+        # if not silent:
+        #     print("--------------------")
+        #     print("clang-tidy summary:")
+        #     print("Number of warning types:", clang_tidy_warnings_count)
+        #     print("Number of warnings:", len(clang_tidy_warnings))
+        #     print("accumulative clang-tidy score:", clang_tidy_score)
+        #     print("--------------------")
 
     # print final result
-    print('%d,%d' % (clang_check_score, clang_tidy_score))
+    # print('%d,%d' % (clang_check_score, clang_tidy_score))
+    print('%d' % (clang_check_score))
+    
 
 
 # driver

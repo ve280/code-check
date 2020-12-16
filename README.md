@@ -29,7 +29,8 @@ PYTHONPATH=. python3 p1/codestyle.py <your_project_dir>
 
 ### For TAs
 
-First, download the zip of all submission of the project from JOJ, for example, `p1_records.zip`.
+First, download the zip of all submission of the project from JOJ, and rename them into `<project-id>_records.zip`, for example, `p1_records.zip`.
+**Make sure that there is no inner directory within the `<project-id>_records` folder, i.e., students' submission should be under `<project-id>_records/<student-id>` directory instead of `<project-id>_records/<some-other-directory>/<student-id>`.**
 
 Second, uncompress the file with `preprocess/uncompress.py`.
 

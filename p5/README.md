@@ -1,3 +1,40 @@
+# Project 5 Grading Criteria - 20FA
+
+
+## Composition
+1. Correctness: 90%
+2. Cleaner code style: 5%
+3. Call center code style: 5%
+
+
+## Correctness [90 points]
+
+The correctness score depends on how many test cases you pass on JOJ.
+
+
+## Code Style [5 points]
+
+Same for both *cleaner.cpp* and *call.cpp*, each 5 points, in total 10 points.
+
+#### clang-check [5 points]
+* **Number of non-main functions** [1 point]  
+  Your program should be split into at least 2 non-main functions.
+  1. \>=2 subroutines [1 point]
+  2. <2 subroutine [0 point]
+
+* **Length of functions** [2 point]  
+  Your main function should be < 100 lines and non-main functions should be < 150 lines.
+  1. =0 long functions [2 point]
+  2. \>=1 long functions [0 point]
+
+* **Body comments** [2 point]  
+  You should have your subroutines well commented. The length of subroutines // (the number of comments + 1) < 50.
+  1. =0 poorly commented function [2 point]
+  2. =1 poorly commented function [1 point]
+  2. \>=2 poorly commented functions [0 point]
+
+
+<!-- 20 SU
 # Project 5 Grading Criteria
 
 
@@ -44,6 +81,7 @@ Same for both *rpn.cpp* and *cache.cpp*, each 5 points, in total 10 points.
 
 See clang-tidy flags in https://github.com/ve280/code-check/blob/master/clang/tidy.py
 
+-->
 
 <!-- 
 # Project 5 Grading Criteria

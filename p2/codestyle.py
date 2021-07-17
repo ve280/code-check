@@ -1,10 +1,12 @@
 import os
 import argparse
 from pprint import pprint
+import re
 
 import clang.check
 import clang.tidy
 import clang.format
+import clang.utils
 
 
 def main(project_dir, silent=False):
@@ -13,6 +15,9 @@ def main(project_dir, silent=False):
 
     clang.format.generate_formatted_files(project_dir, format_dir, files, silent=silent)
 
+    driver_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'driver')
+    clang.utils.inject_driver(project_dir, driver_dir)
+    clang.utils.inject_driver(format_dir, driver_dir)
     clang_check_score = 0
 
     functions = clang.check.parse_functions_new(format_dir, files, silent=silent)
@@ -50,8 +55,15 @@ def main(project_dir, silent=False):
         pprint(clang_tidy_warnings)
         print('\nclang-tidy score: %d' % clang_tidy_score)
 
+    # header usage check
+    allowed_header_names = ['iostream', 'fstream', 'sstream', 'iomanip', 'string', 'cstdlib', 'cassert']
+    not_allowed_usage_count = clang.utils.count_not_allowed_headers(project_dir, files, allowed_header_names, silent)
+    header_usage_score = max(0, 5 - not_allowed_usage_count)
+
+    total_score = clang_check_score + clang_tidy_score + header_usage_score
+
     if silent:
-        print('%d,%d' % (clang_check_score, clang_tidy_score))
+        print('%d,%d,%d,%d' % (total_score, clang_check_score, clang_tidy_score, header_usage_score))
 
 
 parser = argparse.ArgumentParser(description='Project 2 Code Checker.')

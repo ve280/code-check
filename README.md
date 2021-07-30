@@ -41,10 +41,8 @@ python3 preprocess/uncompress.py p1_records.zip
 At last, use the `checkall.py` to generate the result in a csv file (`p1_code_check.csv`):
 
 ```bash
-python3 checkall.py p1 -j 1
+python3 checkall.py p1
 ```
-
-NOTICE: there's a multi-thread bug in checkall.py so run with [-j 1]
 
 ## Clang Tidy Arguments
 

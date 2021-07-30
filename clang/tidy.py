@@ -45,6 +45,7 @@ clang_tidy_checks = {'Checks': ','.join([
     'value': '0'
 }]}
 
+
 # print(json.dumps(clang_tidy_checks))
 
 
@@ -52,9 +53,9 @@ def parse_warnings_new(project_dir, files, silent=False):
     split_sources_headers(files)
     sources, headers, _ = split_sources_headers(files)
     sources_path = build_full_paths(project_dir, sources)
-    p = subprocess.Popen("clang-tidy %s -config='%s' --extra-arg='-fno-color-diagnostics' --extra-arg='-std=c++17' --"
-                         % (' '.join(sources_path), json.dumps(clang_tidy_checks)),
-                         shell=True, stdout=subprocess.PIPE, stderr=silent and subprocess.PIPE or None)
+    p = subprocess.run("clang-tidy %s -config='%s' --extra-arg='-fno-color-diagnostics' --extra-arg='-std=c++17' --"
+                       % (' '.join(sources_path), json.dumps(clang_tidy_checks)),
+                       shell=True, stdout=subprocess.PIPE, stderr=silent and subprocess.PIPE or None)
 
     warnings = {}
     warnings_count = 0
@@ -62,8 +63,9 @@ def parse_warnings_new(project_dir, files, silent=False):
     if not silent:
         print('\nparsing clang-tidy results:')
         print('Ignore the following warnings, if they are suspended.')
-    while p.poll() is None:
-        line = p.stdout.readline().decode('utf-8').strip()
+    lines = p.stdout.decode().split('\n')
+    for line in lines:
+        line = line.strip()
         res = re.findall(r'warning:.*?\[(.*?)\]', line)
         if res:
             if res[0] in warnings:

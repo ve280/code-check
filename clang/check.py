@@ -174,9 +174,9 @@ def parse_functions_new(project_dir, files, silent=False, functions=None):
     files = sources + headers
     sources_path = build_full_paths(project_dir, sources)
     files_path = build_full_paths(project_dir, files)
-    p = subprocess.Popen("clang-check -ast-dump %s --extra-arg='-fno-color-diagnostics' --extra-arg='-std=c++17'  --"
-                         % ' '.join(sources_path), shell=True, stdout=subprocess.PIPE,
-                         stderr=silent and subprocess.PIPE or None)
+    p = subprocess.run("clang-check -ast-dump %s --extra-arg='-fno-color-diagnostics' --extra-arg='-std=c++17'  --"
+                       % ' '.join(sources_path), shell=True, stdout=subprocess.PIPE,
+                       stderr=silent and subprocess.PIPE or None)
 
     current_file = None
 
@@ -185,8 +185,9 @@ def parse_functions_new(project_dir, files, silent=False, functions=None):
 
     func_decl_lines = []
 
-    while p.poll() is None:
-        line = p.stdout.readline().decode('utf-8').strip()
+    lines = p.stdout.decode().split('\n')
+    for line in lines:
+        line = line.strip()
         result = re.findall(r'<(?!(line|col))(.*?), (line|col):.*?>', line)
         if result:
             file_name = result[0][1]

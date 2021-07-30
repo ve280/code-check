@@ -11,11 +11,12 @@ import clang.format
 
 def main(project_dir, silent=False):
     # Formatting initialization
-    files = ['binaryTree.cpp', 'compress.cpp', 'decompress.cpp']
+    main_cpp_files = ['dbc.cpp']
+    limited_line_files = ['BinaryTree.cpp']
+    files = ['BinaryTree.cpp', 'dbc.cpp']
     format_dir = os.path.join(project_dir, 'formatted')
-    main_cpp_files = ['compress.cpp', 'decompress.cpp']
 
-    # Clang checkings
+    # Clang check
     clang.format.generate_formatted_files(project_dir, format_dir, files, silent=silent)
 
     driver_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'driver')
@@ -31,49 +32,50 @@ def main(project_dir, silent=False):
     functions = clang.check.parse_functions_new(format_dir, main_cpp_files, silent=silent)
     clang.check.parse_comments(functions, silent=silent)
     for func_prototype, func in functions.items():
-        mainfunc = (func.name == 'main__compress.cpp' or func.name == 'main__decompress.cpp')
+        is_main_function = (func.name in ['main_{}'.format(_file) for _file in main_cpp_files])
         # Checkpoint 1: Main function length
         # Requirement: Main function should be no longer than 50 physical lines.
-        if mainfunc:
+        if is_main_function:
             if func.func_declarations[0].end - func.func_declarations[0].start >= 50:
                 long_function_count += 1
 
         # Checkpoint 2: Non-main function amount
         # Requirement: Program should be split into at least 2 non-main functions.
-        if not mainfunc and func.len >= 1:
+        if not is_main_function and func.len >= 1:
             subroutine_count += 1
 
         # Checkpoint 3: Non-main function length and amount
-        # Requirement: Non-main functions should be no longer than 150 physical lines.
-        if not mainfunc and func.len >= 150:
+        # Requirement: Non-main functions should be no longer than 100 physical lines.
+        if not is_main_function and func.len >= 100:
             long_function_count += 1
 
         # Checkpoint 4: Function declaration comments (REQUIRES, MODIFIES, EFFECTS)
         # Requirement: All functions should have RME in their declaration.
-        if not mainfunc and func.prototype_comments == 0:
-            tolerance = ['Exception_t', 'bool', 'operator', 'static', 'inline']
-            flag = len(func.func_declarations)>1
-            for entity in tolerance:
-                if func.name == entity:
-                    flag = False
-                    break
-            if flag:
-                print("{} is not commented under declaration.".format(func.name))
-                uncomment_prototype_cnt += 1
+        # if not is_main_function and func.prototype_comments == 0:
+        #     tolerance = ['Exception_t', 'bool', 'operator', 'static', 'inline']
+        #     flag = len(func.func_declarations) > 1
+        #     for entity in tolerance:
+        #         if func.name == entity:
+        #             flag = False
+        #             break
+        #     if flag:
+        #         print("{} is not commented under declaration.".format(func.name))
+        #         uncomment_prototype_cnt += 1
 
+        # Archived
         # Checkpoint 5: Function body comments
         # Requirement: the length of function // the number of comments < 50.
-        if func.body_comments == 0:
-            if func.len >= 50:
-                poorly_commented_cnt += 1
-        elif func.len // func.body_comments >= 50:
-            poorly_commented_cnt += 1
+        # if func.body_comments == 0:
+        #     if func.len >= 50:
+        #         poorly_commented_cnt += 1
+        # elif func.len // func.body_comments >= 50:
+        #     poorly_commented_cnt += 1
+        # Archived
 
-    clang_check_score += min(2, subroutine_count // 1)
+    clang_check_score += min(2, subroutine_count)
     clang_check_score += max(0, 2 - long_function_count)
-    clang_check_score += max(0, 3 - uncomment_prototype_cnt)
-    clang_check_score += max(0, 3 - poorly_commented_cnt)
-    clang_check_score //= 2
+    # clang_check_score += max(0, 3 - uncomment_prototype_cnt)
+    # clang_check_score += max(0, 3 - poorly_commented_cnt)
 
     if not silent:
         print('\nsubroutines: %d, \nlong functions: %d, \nuncomment declarations: %d, \npoorly commented functions: %d'
@@ -83,26 +85,63 @@ def main(project_dir, silent=False):
     clang_tidy_warnings, clang_tidy_warnings_count = clang.tidy.parse_warnings_new(project_dir, files, silent=silent)
     clang_tidy_score = 0
 
-    # Checkpoint 6: Clang tidies
-    # Requirement: Your program should be free of clang tidies.
-    if clang_tidy_warnings_count <= 5:
-        clang_tidy_score += 3
-    elif clang_tidy_warnings_count <= 10:
-        clang_tidy_score += 2
-    elif clang_tidy_warnings_count <= 25:
-        clang_tidy_score += 1
+    # Checkpoint 6: Clang tidy
+    # Requirement: Your program should be free of clang tidy problems.
 
-    if len(clang_tidy_warnings) <= 2:
-        clang_tidy_score += 2
-    elif len(clang_tidy_warnings) <= 5:
-        clang_tidy_score += 1
+    # todo: remove it
+    please_remove_for_the_second_year_temp_change = True
+    # Considering that
+    # the starter code has an warning 'auto rootValue = get_if..' which should be 'const auto* rootValue' to be warning free,
+    # By the time the comment has been written here, the starter code has already be modified. 2021/07/30 -makersmelx
+    # all the warning rubric will tolerate one more warning than usual only for this year 2021.
+    if please_remove_for_the_second_year_temp_change:
+        if clang_tidy_warnings_count <= 6:
+            clang_tidy_score += 4
+        elif clang_tidy_warnings_count <= 11:
+            clang_tidy_score += 3
+        elif clang_tidy_warnings_count <= 26:
+            clang_tidy_score += 1
+
+        if len(clang_tidy_warnings) <= 3:
+            clang_tidy_score += 2
+        elif len(clang_tidy_warnings) <= 6:
+            clang_tidy_score += 1
+    else:
+        # This is the standard grading rubric
+        if clang_tidy_warnings_count <= 5:
+            clang_tidy_score += 4
+        elif clang_tidy_warnings_count <= 10:
+            clang_tidy_score += 3
+        elif clang_tidy_warnings_count <= 25:
+            clang_tidy_score += 1
+
+        if len(clang_tidy_warnings) <= 2:
+            clang_tidy_score += 2
+        elif len(clang_tidy_warnings) <= 5:
+            clang_tidy_score += 1
     if not silent:
         pprint(clang_tidy_warnings)
         print('\nclang-tidy score: %d' % clang_tidy_score)
         print('\nTotal style score: %d' % (clang_tidy_score + clang_check_score))
 
+    # Line Check in BinaryTree methods
+    line_check_count = 0
+
+    line_check_functions = clang.check.parse_functions_new(format_dir, limited_line_files, silent=silent)
+    for func_prototype, func in line_check_functions.items():
+        if not silent:
+            print('{}: length {}'.format(func.name, func.len))
+        if func.len > 10:
+            line_check_count += 1
+    # weight of binary tree methods is 2
+    line_check_score = max(0, 10 - 2 * line_check_count)
+    if not silent:
+        print('Line Check score: {}'.format(line_check_score))
     if silent:
-        print('%d,%d' % (clang_check_score, clang_tidy_score))
+        print('{},{},{},{}'.format(clang_check_score + clang_tidy_score + line_check_score,
+                                   clang_check_score,
+                                   clang_tidy_score,
+                                   line_check_score))
 
 
 parser = argparse.ArgumentParser(description='Project 4 Code Checker.')

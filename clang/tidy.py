@@ -52,7 +52,7 @@ def parse_warnings_new(project_dir, files, silent=False):
     split_sources_headers(files)
     sources, headers, _ = split_sources_headers(files)
     sources_path = build_full_paths(project_dir, sources)
-    p = subprocess.Popen("clang-tidy %s -config='%s' --extra-arg='-fno-color-diagnostics' --"
+    p = subprocess.Popen("clang-tidy %s -config='%s' --extra-arg='-fno-color-diagnostics' --extra-arg='-std=c++17' --"
                          % (' '.join(sources_path), json.dumps(clang_tidy_checks)),
                          shell=True, stdout=subprocess.PIPE, stderr=silent and subprocess.PIPE or None)
 

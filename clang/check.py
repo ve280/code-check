@@ -174,7 +174,7 @@ def parse_functions_new(project_dir, files, silent=False, functions=None):
     files = sources + headers
     sources_path = build_full_paths(project_dir, sources)
     files_path = build_full_paths(project_dir, files)
-    p = subprocess.Popen("clang-check -ast-dump %s --extra-arg='-fno-color-diagnostics' --"
+    p = subprocess.Popen("clang-check -ast-dump %s --extra-arg='-fno-color-diagnostics' --extra-arg='-std=c++17'  --"
                          % ' '.join(sources_path), shell=True, stdout=subprocess.PIPE,
                          stderr=silent and subprocess.PIPE or None)
 

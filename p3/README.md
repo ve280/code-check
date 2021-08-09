@@ -8,34 +8,26 @@ python3 codestyle.py <directory> 2>/dev/null
 ```
 
 ## Composition
-1. Correctness: 90%
-2. Coding style: 10%
+1. Correctness: 85%
+2. Coding style: 15%
 
 
-## Correctness [90 points]
+## Correctness [85 points]
 The correctness score depends on how many test cases you pass on JOJ.
 
 #### JOJ Test Cases
-* TBA
+There are in total 340 cases, each one is worth 0.25.
 
 
-## Coding style [10 points]
+## Coding style [15 points]
 
 #### clang-check [5 points]
-* **Number of non-main functions** [1 point]
+* **Length of functions** [2 point]
 
-  Your program should be split into at least 6 non-main functions.
+  Your main functions should be no longer than 100 lines and non-main functions should be no more than 150 lines.
 
-  1. 6 or more subroutines [1 point]
-  2. 3-5 subroutines [0.5 points]
-  3. 0-2 subroutine [0 points]
-
-* **Length of functions** [1 point]
-
-  Your main functions should be no longer than 60 lines and non-main functions should be no more than 150 lines.
-
-  1. No long functions [1 point]
-  2. 1 long functions [0.5 points]
+  1. No long functions [2 point]
+  2. 1 long functions [1 points]
   3. 2 or more long functions [0 points]
 
 * **Specification comments (REQUIRES, MODIFIES, EFFECTS)** [1.5 points]
@@ -69,5 +61,12 @@ The total clang-check score will round **down** to the nearest integer, *i.e.* 3
   1. 0-2 warnings [2 points]
   2. 2-5 warnings [1 point]
   3. More than 5 warnings [0 points]
+
+#### Header file usage check [5 points]
+
+Deduction is applied for usage of some header files that are not allowed.
+
+- One point deduction for each appearance of a header file that is not allowed
+- Allowed header file: 
 
 See clang-tidy flags in https://github.com/ve280/code-check/blob/master/clang/tidy.py

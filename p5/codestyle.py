@@ -1,111 +1,119 @@
 #!/usr/bin/python3
 
+
 import os
 import argparse
 from pprint import pprint
-
+import re
 import clang.check
 import clang.tidy
 import clang.format
-
+import clang.utils
 
 def main(project_dir, silent=False):
-    # params
+    # Formatting initialization
+    files = ['DlistImpl.h', 'sam.cpp']
+    #files = ['deck.h', 'deck.cpp', 'hand.h', 'hand.cpp', 'player.h', 'player.cpp', 'blackjack.cpp']
+    format_dir = os.path.join(project_dir, 'formatted')
+    main_cpp_name = 'sam.cpp'
+    main_cpp_path = os.path.join(project_dir, main_cpp_name)
+
+    # Clang checkings
+    clang.format.generate_formatted_files(project_dir, format_dir, files, silent=silent)
     clang_check_score = 0
-    # mute clang-tidy check
-    # clang_tidy_score = 0
+    subroutine_count = 0
+    long_function_count = 0
+    uncomment_prototype_cnt = 0
+    poorly_commented_cnt = 0
 
-    files_total = [['call.cpp'], ['cleaner.cpp']]
-    main_function_name_total = ['main__call.cpp', 'main__cleaner.cpp']
+    # Checkpoint 1: Main function length
+    # Requirement: Main function should be no longer than 100 physical lines.
+    main_function = clang.check.parse_functions(main_cpp_name, main_cpp_path, silent=silent)
+    for func_prototype, func in main_function.items():
+        if func.func_declarations[0].end - func.func_declarations[0].start >= 100:
+            long_function_count += 1
 
-    for i in range(len(files_total)):
-        files = files_total[i]
-        main_function_name = main_function_name_total[i]
-        subroutine_count = 0
-        long_function_count = 0
-        poorly_commented_cnt = 0
+    functions = clang.check.parse_functions_new(format_dir, files, silent=silent)
+    clang.check.parse_comments(functions, silent=silent)
+    for func_prototype, func in functions.items():
+        # Checkpoint 2: Non-main function amount
+        # Requirement: Program should be split into at least 6 non-main functions.
+        if func.name != 'main' and func.len >= 1:
+            subroutine_count += 1
 
-        # --------------------------- clang-check ---------------------------
-        # parse and record error
-        functions = clang.check.parse_functions_new(project_dir, files, silent=silent)
-        clang.check.parse_comments(functions, silent=silent)
-        for func_prototype, func in functions.items():
-            # check 1: update number of non-main functions
-            if func.name != main_function_name:
-                subroutine_count += 1
-            # check 2: update number of long functions
-            if (func.name == main_function_name and func.len >= 100) or (func.name != main_function_name and func.len >= 150):
-                long_function_count += 1
-                if not silent:
-                    print("Long function:", func.name)
-            # check 3: update number of poorly commented subroutine body
-            if func.name == main_function_name:
-                continue
-            if func.len // (func.body_comments + 1) >= 50:
-                poorly_commented_cnt += 1
-                if not silent:
-                    print("Poorly commented subroutine body:", func.name, func.len, func.body_comments)
+        # Checkpoint 3: Non-main function length and amount
+        # Requirement: Non-main functions should be no longer than 150 physical lines.
+        if func.name != 'main' and func.len >= 150:
+            long_function_count += 1
 
-        # clang-check score
-        if subroutine_count >= 2:
-            clang_check_score += 1
-        if long_function_count == 0:
-            clang_check_score += 2
-        if poorly_commented_cnt == 0:
-            clang_check_score += 2
-        elif poorly_commented_cnt == 1: # one poorly commented function
-            clang_check_score += 1
-        
-        if not silent:
-            print("--------------------")
-            print("clang-check summary:")
-            print("Number of subroutines:", subroutine_count)
-            print("Number of long functions:", long_function_count)
-            print("Number of poorly commented body:", poorly_commented_cnt)
-            print("accumulative clang-check score:", clang_check_score)
-            print("--------------------")
+        # # Checkpoint 4: Function declaration comments (REQUIRES, MODIFIES, EFFECTS)
+        # # Requirement: All functions should have RME in their declaration.
+        # if func.name != 'main' and func.prototype_comments == 0:
+        #     tolerance = ['Exception_t', 'bool', 'operator', 'static', 'inline']
+        #     flag = len(func.func_declarations)>1
+        #     for entity in tolerance:
+        #         if func.name == entity:
+        #             flag = False
+        #             break
+        #     if flag and (not silent):
+        #         print("{} is not commented under declaration.".format(func.name))
+        #         uncomment_prototype_cnt += 1
 
-        # mute clang-tidy check
-        # # --------------------------- clang-tidy ---------------------------
-        # # parse and record error
-        # clang_tidy_warnings, clang_tidy_warnings_count = clang.tidy.parse_warnings_new(project_dir, files, silent=silent)
+        # # Checkpoint 5: Function body comments
+        # # Requirement: the length of function // the number of comments < 50.
+        # if func.body_comments == 0:
+        #     if func.len >= 50:
+        #         poorly_commented_cnt += 1
+        # elif func.len // func.body_comments >= 50:
+        #     poorly_commented_cnt += 1
 
-        # # clang-tidy score
-        # if clang_tidy_warnings_count <= 5:
-        #     clang_tidy_score += 1
-        # elif clang_tidy_warnings_count <= 10:
-        #     clang_tidy_score += 0.5
-        # if len(clang_tidy_warnings) <= 2:
-        #     clang_tidy_score += 1
-        # elif len(clang_tidy_warnings) <= 5:
-        #     clang_tidy_score += 0.5
-        # if not silent:
-        #     print("--------------------")
-        #     print("clang-tidy summary:")
-        #     print("Number of warning types:", clang_tidy_warnings_count)
-        #     print("Number of warnings:", len(clang_tidy_warnings))
-        #     print("accumulative clang-tidy score:", clang_tidy_score)
-        #     print("--------------------")
+    # clang_check_score += min(2, subroutine_count // 3)
+    clang_check_score += max(0, 6 - long_function_count * 2)
+    # clang_check_score += max(0, 3 - uncomment_prototype_cnt)
+    # clang_check_score += max(0, 3 - poorly_commented_cnt)
+    clang_check_score //= 2
 
-    # print final result
-    # print('%d,%d' % (clang_check_score, clang_tidy_score))
-    print('%d' % (clang_check_score))
-    
+    if not silent:
+        print('\nsubroutines: %d, \nlong functions: %d, \nuncomment declarations: %d, \npoorly commented functions: %d'
+              % (subroutine_count, long_function_count, uncomment_prototype_cnt, poorly_commented_cnt))
+        print('clang-check score: %d' % clang_check_score)
+
+    clang_tidy_warnings, clang_tidy_warnings_count = clang.tidy.parse_warnings_new(project_dir, files, silent=silent)
+    clang_tidy_score = 0
+
+    # Checkpoint 6: Clang tidies
+    # Requirement: Your program should be free of clang tidies.
+    # if clang_tidy_warnings_count <= 5:
+    #     clang_tidy_score += 3
+    if clang_tidy_warnings_count <= 10:
+        clang_tidy_score += 2
+    elif clang_tidy_warnings_count <= 25:
+        clang_tidy_score += 1
+
+    if len(clang_tidy_warnings) <= 2:
+        clang_tidy_score += 2
+    elif len(clang_tidy_warnings) <= 5:
+        clang_tidy_score += 1
 
 
-# driver
-parser = argparse.ArgumentParser(description='Project 5 Code Checker.')
+    # header usage check
+    allowed_header_names = ['iostream', 'string', 'sstream', 'cstdlib', 'cassert', 'algorithm']
+    not_allowed_usage_count = clang.utils.count_not_allowed_headers(project_dir, files, allowed_header_names, silent)
+    header_usage_score = max(0, 3 - not_allowed_usage_count)
+
+
+    if not silent:
+        pprint(clang_tidy_warnings)
+        print('\nclang-tidy score: %d' % clang_tidy_score)
+        print('\nheader usage score: %d' % header_usage_score)
+        print('\nTotal style score: %d' % (clang_tidy_score + clang_check_score + header_usage_score))
+
+    if silent:
+        print('%d,%d,%d' % (clang_check_score, clang_tidy_score, header_usage_score))
+
+
+parser = argparse.ArgumentParser(description='Project 3 Code Checker.')
 parser.add_argument('--silent', action='store_true')
 parser.add_argument('project_dir', type=str, nargs=1)
 args = parser.parse_args()
 main(args.project_dir[0], silent=args.silent)
-
-# # get main comment count
-# main_cpp_path = os.path.join(project_dir, main_cpp_name)
-# main_function = clang.check.parse_functions(main_cpp_name, main_cpp_path, silent=silent)
-# clang.check.parse_comments(main_function, silent=silent)
-# main_comment_count = 0
-# for func_prototype, func in main_function.items():
-#     if func.name != 'main__':
-#         continue
-#     main_comment_count = func.body_comments

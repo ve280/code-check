@@ -65,6 +65,9 @@ def main(project_dir,silent=False):
         print("\n")
         print("clang-check score: %d" %clang_check_score)
         print("clang-tidy score: %d" %clang_tidy_score)
+    
+    if silent:
+        print('%d,%d' % (clang_check_score, clang_tidy_score))
 
 
 # parse program args and call main

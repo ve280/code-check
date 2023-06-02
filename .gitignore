@@ -1,7 +1,10 @@
 test
 *.cpp
+*.h
 !*/driver/*.cpp
 !*/driver/*.h
+!p*/*/driver/*.cpp
+!p*/*/driver/*.h
 *_records
 *.tar.*
 *.zip

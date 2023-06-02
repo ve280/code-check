@@ -10,14 +10,14 @@ import clang.utils
 
 
 def main(project_dir, silent=False):
-    files = ['mip.cpp','constants.h','image.h']
+    files = ['bot.cpp', 'main.cpp', 'bot.h']
     format_dir = os.path.join(project_dir, 'formatted')
 
     clang.format.generate_formatted_files(project_dir, format_dir, files, silent=silent)
 
-    # driver_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'driver')
-    # clang.utils.inject_driver(project_dir, driver_dir)
-    # clang.utils.inject_driver(format_dir, driver_dir)
+    driver_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'driver')
+    clang.utils.inject_driver(project_dir, driver_dir)
+    clang.utils.inject_driver(format_dir, driver_dir)
     clang_check_score = 0
 
     functions = clang.check.parse_functions_new(format_dir, files, silent=silent)
@@ -56,7 +56,7 @@ def main(project_dir, silent=False):
         print('\nclang-tidy score: %d' % clang_tidy_score)
 
     # header usage check
-    allowed_header_names = ['iostream', 'fstream', 'sstream', 'cstring', 'string', 'cstdlib', 'vector', 'algorithm']
+    allowed_header_names = ['iostream', 'fstream', 'sstream', 'iomanip', 'string', 'cstdlib', 'cassert']
     not_allowed_usage_count = clang.utils.count_not_allowed_headers(project_dir, files, allowed_header_names, silent)
     header_usage_score = max(0, 5 - not_allowed_usage_count)
 

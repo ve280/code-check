@@ -27,7 +27,7 @@ def main(project_dir, silent=False):
     long_function_count = 0
 
     for func_prototype, func in functions.items():
-        if func.name != 'main' and func.len >= 1:
+        if func.name != 'main__mip.cpp' and func.len >= 1:
             subroutine_count += 1
         if func.len >= 100:
             long_function_count += 1

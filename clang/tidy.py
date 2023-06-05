@@ -9,7 +9,7 @@ clang_tidy_checks = {'Checks': ','.join([
     "*",
     "-android-*",
     "-abseil-string-find-str-contains",
-    "-altra-*",
+    "-altera-*",
     "-bugprone-bool-pointer-implicit-conversion",
     "-bugprone-exception-escape",
     "-bugprone-easily-swappable-parameters",

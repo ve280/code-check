@@ -4,7 +4,7 @@ This grading policy is adapted and revised from project 2.
 ## Running `codestyle.py`
 This script is for checking 4 files: `deck.cpp`, `hand.cpp`, `player.cpp` and `blackjack.cpp`. Do not worry about errors like "card.h not found". This is just cerr output of clang-check which will not lead to any deduction (since we will not check the already implemented files). If you want to mute those errors, run with
 ```bash
-python3 codestyle.py <directory> 2>/dev/null
+python3 p3/codestyle.py <directory> 2>/dev/null
 ```
 
 ## Composition
@@ -16,7 +16,7 @@ python3 codestyle.py <directory> 2>/dev/null
 The correctness score depends on how many test cases you pass on JOJ.
 
 #### JOJ Test Cases
-There are in total 340 cases, each one is worth 0.25.
+There are in total 6 pretest cases and some hidden cases.
 
 
 ## Coding style [15 points]

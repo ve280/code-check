@@ -13,7 +13,7 @@ import clang.utils
 def main(project_dir, silent=False):
     # Formatting initialization
     files = ['deck.cpp', 'hand.cpp', 'player.cpp', 'blackjack.cpp']
-    #files = ['deck.h', 'deck.cpp', 'hand.h', 'hand.cpp', 'player.h', 'player.cpp', 'blackjack.cpp']
+    #files = ['deck.h', 'deck.cpp', 'hand.h', 'hand.cpp', 'player.h', 'player.cpp', 'blackjack.cpp','rand.h','card.h']
     format_dir = os.path.join(project_dir, 'formatted')
     main_cpp_name = 'blackjack.cpp'
     main_cpp_path = os.path.join(project_dir, main_cpp_name)
@@ -38,17 +38,17 @@ def main(project_dir, silent=False):
     for func_prototype, func in functions.items():
         # Checkpoint 2: Non-main function amount
         # Requirement: Program should be split into at least 6 non-main functions.
-        if func.name != 'main' and func.len >= 1:
+        if func.name != 'main__' + main_cpp_name and func.len >= 1:
             subroutine_count += 1
 
         # Checkpoint 3: Non-main function length and amount
         # Requirement: Non-main functions should be no longer than 150 physical lines.
-        if func.name != 'main' and func.len >= 150:
+        if func.name != 'main' + main_cpp_name and func.len >= 150:
             long_function_count += 1
 
         # Checkpoint 4: Function declaration comments (REQUIRES, MODIFIES, EFFECTS)
         # Requirement: All functions should have RME in their declaration.
-        if func.name != 'main' and func.prototype_comments == 0:
+        if func.name != 'main' + main_cpp_name and func.prototype_comments == 0:
             tolerance = ['Exception_t', 'bool', 'operator', 'static', 'inline']
             flag = len(func.func_declarations)>1
             for entity in tolerance:

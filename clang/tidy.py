@@ -25,6 +25,8 @@ clang_tidy_checks = {'Checks': ','.join([
     "-llvm-*",
     "-llvmlibc-*",
     "-objc-*",
+    "-readability-avoid-const-params-in-decls",
+    "-readability-make-member-function-const",
     "-readability-else-after-return",
     "-readability-container-data-pointer",
     "-readability-implicit-bool-conversion",

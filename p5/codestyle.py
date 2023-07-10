@@ -38,17 +38,17 @@ def main(project_dir, silent=False):
     for func_prototype, func in functions.items():
         # Checkpoint 2: Non-main function amount
         # Requirement: Program should be split into at least 6 non-main functions.
-        if func.name != 'main' and func.len >= 1:
+        if func.name != 'main' + main_cpp_name and func.len >= 1:
             subroutine_count += 1
 
         # Checkpoint 3: Non-main function length and amount
         # Requirement: Non-main functions should be no longer than 150 physical lines.
-        if func.name != 'main' and func.len >= 150:
+        if func.name != 'main' + main_cpp_name and func.len >= 150:
             long_function_count += 1
 
         # # Checkpoint 4: Function declaration comments (REQUIRES, MODIFIES, EFFECTS)
         # # Requirement: All functions should have RME in their declaration.
-        # if func.name != 'main' and func.prototype_comments == 0:
+        # if func.name != 'main' + main_cpp_name and func.prototype_comments == 0:
         #     tolerance = ['Exception_t', 'bool', 'operator', 'static', 'inline']
         #     flag = len(func.func_declarations)>1
         #     for entity in tolerance:
@@ -112,7 +112,7 @@ def main(project_dir, silent=False):
         print('%d,%d,%d' % (clang_check_score, clang_tidy_score, header_usage_score))
 
 
-parser = argparse.ArgumentParser(description='Project 3 Code Checker.')
+parser = argparse.ArgumentParser(description='Project 5 Code Checker.')
 parser.add_argument('--silent', action='store_true')
 parser.add_argument('project_dir', type=str, nargs=1)
 args = parser.parse_args()

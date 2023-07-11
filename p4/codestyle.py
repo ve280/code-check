@@ -11,9 +11,9 @@ import clang.format
 
 def main(project_dir, silent=False):
     # Formatting initialization
-    main_cpp_files = ['dbc.cpp']
-    limited_line_files = ['BinaryTree.cpp']
-    files = ['BinaryTree.cpp', 'dbc.cpp']
+    main_cpp_files = ['compress.cpp', 'decompress.cpp']
+    limited_line_files = ['binaryTree.cpp']
+    files = ['binaryTree.cpp', 'compress.cpp', 'decompress.cpp']
     format_dir = os.path.join(project_dir, 'formatted')
 
     # Clang check
@@ -51,31 +51,31 @@ def main(project_dir, silent=False):
 
         # Checkpoint 4: Function declaration comments (REQUIRES, MODIFIES, EFFECTS)
         # Requirement: All functions should have RME in their declaration.
-        # if not is_main_function and func.prototype_comments == 0:
-        #     tolerance = ['Exception_t', 'bool', 'operator', 'static', 'inline']
-        #     flag = len(func.func_declarations) > 1
-        #     for entity in tolerance:
-        #         if func.name == entity:
-        #             flag = False
-        #             break
-        #     if flag:
-        #         print("{} is not commented under declaration.".format(func.name))
-        #         uncomment_prototype_cnt += 1
+        if not is_main_function and func.prototype_comments == 0:
+            tolerance = ['Exception_t', 'bool', 'operator', 'static', 'inline']
+            flag = len(func.func_declarations) > 1
+            for entity in tolerance:
+                if func.name == entity:
+                    flag = False
+                    break
+            if flag:
+                print("{} is not commented under declaration.".format(func.name))
+                uncomment_prototype_cnt += 1
 
-        # Archived
         # Checkpoint 5: Function body comments
         # Requirement: the length of function // the number of comments < 50.
-        # if func.body_comments == 0:
-        #     if func.len >= 50:
-        #         poorly_commented_cnt += 1
-        # elif func.len // func.body_comments >= 50:
-        #     poorly_commented_cnt += 1
-        # Archived
+        if func.body_comments == 0:
+            if func.len >= 50:
+                poorly_commented_cnt += 1
+        elif func.len // func.body_comments >= 50:
+            poorly_commented_cnt += 1
 
     clang_check_score += min(2, subroutine_count)
     clang_check_score += max(0, 2 - long_function_count)
-    # clang_check_score += max(0, 3 - uncomment_prototype_cnt)
-    # clang_check_score += max(0, 3 - poorly_commented_cnt)
+    clang_check_score += max(0, 3 - uncomment_prototype_cnt)
+    clang_check_score += max(0, 3 - poorly_commented_cnt)
+
+    clang_check_score = clang_check_score // 2
 
     if not silent:
         print('\nsubroutines: %d, \nlong functions: %d, \nuncomment declarations: %d, \npoorly commented functions: %d'
@@ -87,38 +87,18 @@ def main(project_dir, silent=False):
 
     # Checkpoint 6: Clang tidy
     # Requirement: Your program should be free of clang tidy problems.
+    if clang_tidy_warnings_count <= 5:
+        clang_tidy_score += 3
+    elif clang_tidy_warnings_count <= 10:
+        clang_tidy_score += 2
+    elif clang_tidy_warnings_count <= 25:
+        clang_tidy_score += 1
 
-    # todo: remove it
-    please_remove_for_the_second_year_temp_change = True
-    # Considering that
-    # the starter code has an warning 'auto rootValue = get_if..' which should be 'const auto* rootValue' to be warning free,
-    # By the time the comment has been written here, the starter code has already be modified. 2021/07/30 -makersmelx
-    # all the warning rubric will tolerate one more warning than usual only for this year 2021.
-    if please_remove_for_the_second_year_temp_change:
-        if clang_tidy_warnings_count <= 6:
-            clang_tidy_score += 4
-        elif clang_tidy_warnings_count <= 11:
-            clang_tidy_score += 3
-        elif clang_tidy_warnings_count <= 26:
-            clang_tidy_score += 1
+    if len(clang_tidy_warnings) <= 2:
+        clang_tidy_score += 2
+    elif len(clang_tidy_warnings) <= 5:
+        clang_tidy_score += 1
 
-        if len(clang_tidy_warnings) <= 3:
-            clang_tidy_score += 2
-        elif len(clang_tidy_warnings) <= 6:
-            clang_tidy_score += 1
-    else:
-        # This is the standard grading rubric
-        if clang_tidy_warnings_count <= 5:
-            clang_tidy_score += 4
-        elif clang_tidy_warnings_count <= 10:
-            clang_tidy_score += 3
-        elif clang_tidy_warnings_count <= 25:
-            clang_tidy_score += 1
-
-        if len(clang_tidy_warnings) <= 2:
-            clang_tidy_score += 2
-        elif len(clang_tidy_warnings) <= 5:
-            clang_tidy_score += 1
     if not silent:
         pprint(clang_tidy_warnings)
         print('\nclang-tidy score: %d' % clang_tidy_score)

@@ -51,6 +51,7 @@ clang_tidy_checks = {'Checks': ','.join([
     "-clang-diagnostic-*",
     "-clang-analyzer-*",
     "-zircon-*",
+    "-misc-no-recursion"
 ]), 'CheckOptions': [{
     'key': 'misc-throw-by-value-catch-by-reference.CheckThrowTemporaries',
     'value': '0'

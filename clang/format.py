@@ -19,6 +19,9 @@ def generate_formatted_files(project_dir, target_dir, files, silent=False):
                                stderr=silent and subprocess.PIPE or None)
             # while p.poll() is None:
             #     time.sleep(0.001)
+        # Add a newline at the end of file
+        with open(output_file, 'a') as f:
+            f.write('\n')
 
     if not silent:
         print('')
